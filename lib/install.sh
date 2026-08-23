@@ -27,7 +27,7 @@ echo "✅ Node.js $(node -v) installed"
 
 # Clone repo
 echo "📥 Cloning NOVA-MD..."
-git clone https://github.com/NOVA-X-Code/Nova-MD /root/NOVA-MD
+git clone https://github.com/NOSTRA-DevOps/Nova-MD /root/NOVA-MD
 cd /root/NOVA-MD
 
 # Install npm packages

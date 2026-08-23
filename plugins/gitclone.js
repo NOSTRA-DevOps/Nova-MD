@@ -14,7 +14,7 @@ export default {
             const link = args[0];
             if (!link) {
                 return await sock.sendMessage(chatId, {
-                    text: `❌ *Missing Link!*\n\nExample: .gitclone https://github.com/NOVA-X-Code/Nova-MD`
+                    text: `❌ *Missing Link!*\n\nExample: .gitclone https://github.com/NOSTRA-DevOps/Nova-MD`
                 }, { quoted: message });
             }
             

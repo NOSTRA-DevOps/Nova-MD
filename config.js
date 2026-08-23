@@ -16,7 +16,7 @@ const config = {
     'commandMode': process.env.COMMAND_MODE || 'private',
     'timeZone': process.env.TIMEZONE || 'Africa/Douala',
     'channelLink': 'https://whatsapp.com/channel/0029Vb8ZJnsAYlUHo1uA6W0y',
-    'updateZipUrl': process.env.UPDATE_URL || 'https://github.com/NOVA-X-Code/Nova-MD/archive/refs/heads/main.zip',
+    'updateZipUrl': process.env.UPDATE_URL || 'https://github.com/NOSTRA-DevOps/Nova-MD/archive/refs/heads/main.zip',
     'ytChannel': 'https://www.youtube.com/@LaboKingFreeSurf?sub_confirmation=1',
     'sessionId': process.env.SESSION_ID || '',
     'pairingNumber': process.env.PAIRING_NUMBER || '',

@@ -1,3 +1,4 @@
+// plugins/chatbotconfig.js - Configuration globale du chatbot
 import chatbotService from '../lib/chatbotService.js';
 import chatbotConfig from '../lib/chatbotConfig.js';
 import { isOwnerOnly } from '../lib/isOwner.js';
@@ -30,7 +31,7 @@ export default {
             text += `│ 📊 Status: ${status.enabled} ${config.enabled ? '✅ Enabled' : '❌ Disabled'}\n`;
             text += `│ 🔒 Mode: ${status.mode}\n`;
             text += `│ 🔌 Provider: ${status.provider}\n`;
-            text += `│ ${config.apiKey ? '✅' : '❌'} API Key: ${config.apiKey ? 'Configured' : '⚠️ NOT SET — chatbot won\'t respond'}\n`;
+            text += `│ ${config.apiKey ? '✅' : '❌'} API Key: ${config.apiKey ? 'Configured' : '⚠️ NOT SET'}\n`;
             text += `│ ${config.apiUrl ? '✅' : '❌'} URL: ${config.apiUrl || 'Not configured'}\n`;
             text += `│ 📚 Context: ${config.customContext ? '✅ Custom' : '❌ Default'}\n`;
             text += `│ 🔄 History: ${config.maxHistory} messages\n`;
@@ -39,11 +40,11 @@ export default {
             text += `└─────────────────────────\n\n`;
 
             if (!config.apiKey) {
-                text += `⚠️ *An API key is required!* The chatbot will not answer until you run:\n`;
+                text += `⚠️ *An API key is required!*\n`;
                 text += `\`\`\`\n.cbc apikey <your_key>\n\`\`\`\n\n`;
             }
 
-            text += `*📋 Providers available:*\n`;
+            text += `*📋 Providers:*\n`;
             text += `• \`grok\` - xAI (Grok) — *recommended*\n`;
             text += `• \`puter\` - Puter (free, needs account)\n`;
             text += `• \`pollinations\` - Free, no key needed\n`;
@@ -51,26 +52,23 @@ export default {
             text += `• \`openai\` - OpenAI\n`;
             text += `• \`custom\` - Custom API\n\n`;
 
-            text += `*📋 Chatbot Mode:*\n`;
-            text += `• \`public\` - Everyone can use the chatbot\n`;
-            text += `• \`private\` - Only the owner can use the chatbot\n\n`;
-
             text += `*📋 Commands:*\n`;
             text += `• \`.cbc provider <grok|puter|pollinations|gemini|openai|custom>\`\n`;
-            text += `• \`.cbc apikey <your_api_key>\` _(required!)_\n`;
+            text += `• \`.cbc apikey <your_api_key>\`\n`;
             text += `• \`.cbc apiurl <your_api_url>\`\n`;
             text += `• \`.cbc mode <public|private>\`\n`;
             text += `• \`.cbc context <your_context>\`\n`;
             text += `• \`.cbc enable|disable\`\n`;
             text += `• \`.cbc clearhistory\`\n`;
+            text += `• \`.cbc temp <0-1>\`\n`;
+            text += `• \`.cbc maxtokens <50-4096>\`\n`;
             text += `• \`.cbc reset\`\n`;
             text += `• \`.cbc status\`\n\n`;
             
             text += `💡 *Examples:*\n`;
-            text += `• \`.cbc apikey gsk_xxxxxxxx\` _(Grok key)_\n`;
+            text += `• \`.cbc apikey gsk_xxxxxxxx\`\n`;
             text += `• \`.cbc provider grok\`\n`;
-            text += `• \`.cbc mode public\`\n`;
-            text += `• \`.cbc context You are a helpful assistant...\``;
+            text += `• \`.cbc mode public\``;
 
             return await sock.sendMessage(chatId, { text }, { quoted: message });
         }
@@ -78,7 +76,6 @@ export default {
         // === CONFIGURATION ===
         try {
             switch (option) {
-                // --- PROVIDER ---
                 case 'provider': {
                     const providers = ['grok', 'puter', 'pollinations', 'gemini', 'openai', 'custom'];
                     if (!providers.includes(value)) {
@@ -95,7 +92,6 @@ export default {
                     break;
                 }
 
-                // --- API KEY ---
                 case 'apikey':
                     if (!value) {
                         return await sock.sendMessage(chatId, {
@@ -110,7 +106,6 @@ export default {
                     });
                     break;
 
-                // --- API URL ---
                 case 'apiurl':
                     if (!value) {
                         return await sock.sendMessage(chatId, {
@@ -125,7 +120,6 @@ export default {
                     });
                     break;
 
-                // --- MODE (public/private) ---
                 case 'mode':
                     if (!['public', 'private'].includes(value)) {
                         return await sock.sendMessage(chatId, {
@@ -140,7 +134,6 @@ export default {
                     });
                     break;
 
-                // --- CONTEXT ---
                 case 'context':
                     if (!value) {
                         return await sock.sendMessage(chatId, {
@@ -156,7 +149,6 @@ export default {
                     });
                     break;
 
-                // --- ENABLE ---
                 case 'enable':
                     chatbotConfig.set('enabled', true);
                     await sock.sendMessage(chatId, {
@@ -165,7 +157,6 @@ export default {
                     });
                     break;
 
-                // --- DISABLE ---
                 case 'disable':
                     chatbotConfig.set('enabled', false);
                     await sock.sendMessage(chatId, {
@@ -174,7 +165,6 @@ export default {
                     });
                     break;
 
-                // --- CLEAR HISTORY ---
                 case 'clearhistory':
                 case 'clear':
                     chatbotService.clearHistory();
@@ -184,19 +174,6 @@ export default {
                     });
                     break;
 
-                // --- RESET ---
-                case 'reset':
-                    chatbotConfig.set('customContext', '');
-                    chatbotConfig.set('temperature', 0.7);
-                    chatbotConfig.set('maxTokens', 1024);
-                    chatbotService.clearHistory();
-                    await sock.sendMessage(chatId, {
-                        text: '🔄 Chatbot reset to default settings',
-                        quoted: message
-                    });
-                    break;
-
-                // --- TEMPERATURE ---
                 case 'temp':
                 case 'temperature':
                     if (!value || isNaN(value)) {
@@ -219,7 +196,6 @@ export default {
                     });
                     break;
 
-                // --- MAX TOKENS ---
                 case 'maxtokens':
                 case 'tokens':
                     if (!value || isNaN(value)) {
@@ -242,18 +218,13 @@ export default {
                     });
                     break;
 
-                // --- GROK MODEL ---
-                case 'grokmodel':
-                case 'model':
-                    if (!value) {
-                        return await sock.sendMessage(chatId, {
-                            text: '❌ Please provide a model name (e.g., grok-1, grok-2-latest)',
-                            quoted: message
-                        });
-                    }
-                    chatbotConfig.set('grokModel', value);
+                case 'reset':
+                    chatbotConfig.set('customContext', '');
+                    chatbotConfig.set('temperature', 0.7);
+                    chatbotConfig.set('maxTokens', 1024);
+                    chatbotService.clearHistory();
                     await sock.sendMessage(chatId, {
-                        text: `✅ Grok model set to: ${value}`,
+                        text: '🔄 Chatbot reset to default settings',
                         quoted: message
                     });
                     break;

@@ -1,14 +1,12 @@
 # Dependencies
 node_modules/
-
+logs/
 # Build output
 dist/
 
 # Session files
 session/
-test/
-scripts/
-WEB-PAIR-QR/
+
 # Runtime data
 temp/
 tmp/
@@ -26,6 +24,10 @@ baileys_store.db
 # Data files (runtime, not source)
 data/*.json
 !data/.gitkeep
+test/
+WEB-PAIR-QR/
+scripts/
+.backup/
 
 # Log files
 *.log
@@ -35,7 +37,6 @@ yarn-error.log*
 
 # Editor
 .idea/
-.backup/
 .vscode/
 *.suo
 *.ntvs*

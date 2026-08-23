@@ -2,7 +2,7 @@
   "name": "NOVA-MD",
   "description": "High performance multi-device WhatsApp bot",
   "keywords": ["whatsapp-bot", "baileys", "NOVA-MD"],
-  "repository": "https://github.com/NOVA-X-Code/Nova-MD",
+  "repository": "https://github.com/NOSTRA-DevOps/Nova-MD",
   "stack": "container",
   "env": {
     "SESSION_ID": {

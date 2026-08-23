@@ -70,7 +70,7 @@ echo ""
 # Clone if not in repo
 if [ ! -f "heroku.yml" ]; then
     echo -e "${YELLOW}📦 Cloning NOVA-MD repo...${NC}"
-    git clone https://github.com/NOVA-X-Code/Nova-MD NOVA-MD-deploy
+    git clone https://github.com/NOSTRA-DevOps/Nova-MD NOVA-MD-deploy
     cd NOVA-MD-deploy
 fi
 
