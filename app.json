@@ -1,0 +1,81 @@
+{
+  "name": "NOVA-MD",
+  "description": "High performance multi-device WhatsApp bot",
+  "keywords": ["whatsapp-bot", "baileys", "NOVA-MD"],
+  "repository": "https://github.com/NOVA-X-Code/Nova-MD",
+  "stack": "container",
+  "env": {
+    "SESSION_ID": {
+      "description": "Your session ID (get it by running the bot locally first)",
+      "required": true,
+      "value": ""
+    },
+    "OWNER_NUMBER": {
+      "description": "Your WhatsApp number with country code (e.g. 237676250509)",
+      "required": true,
+      "value": "237676250509"
+    },
+    "MONGO_URL": {
+      "description": "MongoDB URL for persistent storage (recommended for Heroku)",
+      "required": false,
+      "value": ""
+    },
+    "POSTGRES_URL": {
+      "description": "PostgreSQL URL for persistent storage",
+      "required": false,
+      "value": ""
+    },
+    "MYSQL_URL": {
+      "description": "MySQL URL for persistent storage",
+      "required": false,
+      "value": ""
+    },
+    "BOT_NAME": {
+      "description": "Your bot name",
+      "required": false,
+      "value": "NOVA-MD"
+    },
+    "BOT_OWNER": {
+      "description": "Owner display name",
+      "required": false,
+      "value": "NOSTRA"
+    },
+    "PREFIXES": {
+      "description": "Command prefixes separated by comma (e.g. .,!,/)",
+      "required": false,
+      "value": "$"
+    },
+    "PACKNAME": {
+      "description": "Sticker pack name",
+      "required": false,
+      "value": "NOVA-MD"
+    },
+    "COMMAND_MODE": {
+      "description": "Bot mode: public or private",
+      "required": false,
+      "value": "private"
+    },
+    "TIMEZONE": {
+      "description": "Your timezone (e.g. Asia/Karachi, America/New_York)",
+      "required": false,
+      "value": "Africa/Douala"
+    },
+    "REMOVEBG_KEY": {
+      "description": "Remove.bg API key for background removal",
+      "required": false,
+      "value": ""
+    }
+  },
+  "buildpacks": [
+    { "url": "heroku/nodejs" },
+    { "url": "https://github.com/DuckyTeam/heroku-buildpack-imagemagick.git" },
+    { "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest" },
+    { "url": "https://github.com/clhuang/heroku-buildpack-webp-binaries.git" }
+  ],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  }
+}

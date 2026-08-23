@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Method</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: transparent;
+            font-family: 'Syne', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 500px;
+        }
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            padding: 32px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 400px;
+        }
+        #qrCode {
+            width: 300px;
+            height: 300px;
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qr-instructions {
+            text-align: center;
+            color: rgba(232,234,240,0.4);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .loading {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            color: #00ff88;
+            font-size: 0.9rem;
+        }
+        .loading.active { display: flex; }
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #00ff88;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .status {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .status.active { display: block; }
+        .status.success {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+        }
+        .status.error {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid #ff4757;
+            color: #ff4757;
+        }
+    </style>
+</head>
+<body>
+    <div class="qr-container">
+        <div id="qrCode"></div>
+        <div class="qr-instructions">
+            <strong>Instructions:</strong><br>
+            1. Open WhatsApp on your phone<br>
+            2. Go to Settings > Linked Devices<br>
+            3. Tap "Link a Device"<br>
+            4. Scan the QR code above
+        </div>
+        <div class="loading" id="qrLoading">
+            <div class="spinner"></div>
+            <span>Generating QR code...</span>
+        </div>
+        <div class="status" id="qrStatus"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script>
+        let qrSessionId = null;
+        let statusCheckInterval = null;
+
+        async function initializeQR() {
+            const loading = document.getElementById('qrLoading');
+            const status = document.getElementById('qrStatus');
+            const qrContainer = document.getElementById('qrCode');
+
+            loading.classList.add('active');
+            status.classList.remove('active');
+            qrContainer.innerHTML = '';
+
+            try {
+                const response = await fetch('/api/pairing/qr/init', { method: 'GET' });
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error || 'Failed to initialize QR session');
+
+                qrSessionId = data.sessionId;
+                const img = document.createElement('img');
+                img.src = data.qr;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.borderRadius = '12px';
+                qrContainer.appendChild(img);
+
+                loading.classList.remove('active');
+                waitForQRCompletion();
+            } catch (err) {
+                loading.classList.remove('active');
+                showStatus('qrStatus', 'error', 'Failed: ' + err.message);
+            }
+        }
+
+        async function waitForQRCompletion() {
+            if (statusCheckInterval) clearInterval(statusCheckInterval);
+            
+            statusCheckInterval = setInterval(async () => {
+                if (!qrSessionId) return;
+                
+                try {
+                    const response = await fetch(`/api/pairing/qr/check/${qrSessionId}`);
+                    const data = await response.json();
+
+                    if (data.completed) {
+                        clearInterval(statusCheckInterval);
+                        showStatus('qrStatus', 'success', '✅ Connected!');
+                        // Notify parent frame
+                        window.parent.postMessage({ type: 'session_completed' }, '*');
+                    }
+                } catch (err) {
+                    console.error('Error checking QR status:', err);
+                }
+            }, 3000);
+        }
+
+        function showStatus(elementId, type, message) {
+            const el = document.getElementById(elementId);
+            el.className = 'status active ' + type;
+            el.textContent = message;
+        }
+
+        initializeQR();
+    </script>
+</body>
+</html>

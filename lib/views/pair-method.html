@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pairing Code Method</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: transparent;
+            font-family: 'Syne', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 500px;
+        }
+        .pair-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 32px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 400px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #e8eaf0;
+        }
+        input {
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 8px;
+            color: #e8eaf0;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.95rem;
+        }
+        input:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            background: linear-gradient(135deg, #00ff88 0%, #00cfff 100%);
+            color: #050508;
+        }
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 255, 136, 0.2);
+        }
+        .pair-code-display {
+            font-size: 2rem;
+            font-family: 'DM Mono', monospace;
+            font-weight: 700;
+            text-align: center;
+            color: #00ff88;
+            padding: 24px;
+            background: rgba(0, 255, 136, 0.05);
+            border: 2px solid #00ff88;
+            border-radius: 12px;
+            margin: 24px 0;
+            letter-spacing: 4px;
+        }
+        .qr-instructions {
+            text-align: center;
+            color: rgba(232,234,240,0.4);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .loading {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            color: #00ff88;
+            font-size: 0.9rem;
+        }
+        .loading.active { display: flex; }
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #00ff88;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .status {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .status.active { display: block; }
+        .status.success {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+        }
+        .status.error {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid #ff4757;
+            color: #ff4757;
+        }
+        .hint {
+            color: rgba(232,234,240,0.4);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="pair-form">
+        <div class="form-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="tel" id="phoneNumber" placeholder="Ex: 212123456789" />
+            <div class="hint">Include country code without + symbol (e.g., 212 for Morocco)</div>
+        </div>
+        
+        <button class="btn" onclick="requestPairingCode()">🔢 Get Pairing Code</button>
+        
+        <div id="pairingCodeContainer" style="display: none;">
+            <div class="pair-code-display" id="pairingCode"></div>
+            <div class="qr-instructions">
+                <strong>How to use this code:</strong><br>
+                1. Open WhatsApp on your phone<br>
+                2. Go to Settings > Linked Devices<br>
+                3. Tap "Link with Phone Number"<br>
+                4. Enter this 8-digit code
+            </div>
+        </div>
+        
+        <div class="loading" id="pairLoading">
+            <div class="spinner"></div>
+            <span>Getting pairing code...</span>
+        </div>
+        <div class="status" id="pairStatus"></div>
+    </div>
+
+    <script>
+        let pairSessionId = null;
+        let statusCheckInterval = null;
+
+        async function requestPairingCode() {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            if (!phoneNumber) {
+                showStatus('pairStatus', 'error', 'Please enter a phone number');
+                return;
+            }
+
+            const loading = document.getElementById('pairLoading');
+            const status = document.getElementById('pairStatus');
+            const codeContainer = document.getElementById('pairingCodeContainer');
+
+            loading.classList.add('active');
+            status.classList.remove('active');
+            codeContainer.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/pairing/pair/init', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phoneNumber: phoneNumber })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error || 'Failed to get pairing code');
+
+                pairSessionId = data.sessionId;
+                document.getElementById('pairingCode').textContent = data.code;
+                codeContainer.style.display = 'block';
+                loading.classList.remove('active');
+
+                waitForPairingCompletion();
+            } catch (err) {
+                loading.classList.remove('active');
+                showStatus('pairStatus', 'error', 'Failed: ' + err.message);
+            }
+        }
+
+        async function waitForPairingCompletion() {
+            if (statusCheckInterval) clearInterval(statusCheckInterval);
+            
+            statusCheckInterval = setInterval(async () => {
+                if (!pairSessionId) return;
+                
+                try {
+                    const response = await fetch(`/api/pairing/pair/check/${pairSessionId}`);
+                    const data = await response.json();
+
+                    if (data.completed) {
+                        clearInterval(statusCheckInterval);
+                        showStatus('pairStatus', 'success', '✅ Connected!');
+                        window.parent.postMessage({ type: 'session_completed' }, '*');
+                    }
+                } catch (err) {
+                    console.error('Error checking pair status:', err);
+                }
+            }, 3000);
+        }
+
+        function showStatus(elementId, type, message) {
+            const el = document.getElementById(elementId);
+            el.className = 'status active ' + type;
+            el.textContent = message;
+        }
+
+        document.getElementById('phoneNumber').focus();
+    </script>
+</body>
+</html>
