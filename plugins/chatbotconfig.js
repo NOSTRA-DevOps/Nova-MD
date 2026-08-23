@@ -1,14 +1,14 @@
-// plugins/chatbotconfig.js - Configuration globale du chatbot
+// plugins/chatbotconfig.js - Configuration globale du chatbot (commande unifiée)
 import chatbotService from '../lib/chatbotService.js';
 import chatbotConfig from '../lib/chatbotConfig.js';
 import { isOwnerOnly } from '../lib/isOwner.js';
 
 export default {
-    command: 'chatbotconfig',
-    aliases: ['cbc', 'chbconfig', 'botconfig'],
+    command: 'cbc',
+    aliases: ['chatbotconfig', 'chbconfig', 'botconfig'],
     category: 'owner',
-    description: 'Configure the chatbot (provider, mode, API key, context, etc.)',
-    usage: '.chatbotconfig [option] [value]',
+    description: 'Configure the chatbot (provider, mode, API key, on/off, etc.)',
+    usage: '.cbc [option] [value]',
     ownerOnly: true,
     handler: async (sock, message, args, context) => {
         const chatId = context.chatId || message.key.remoteJid;
@@ -39,26 +39,22 @@ export default {
             text += `│ ⚡ Commands: ${config.executeCommands ? '✅ Enabled' : '❌ Disabled'}\n`;
             text += `└─────────────────────────\n\n`;
 
-            if (!config.apiKey) {
-                text += `⚠️ *An API key is required!*\n`;
-                text += `\`\`\`\n.cbc apikey <your_key>\n\`\`\`\n\n`;
-            }
-
             text += `*📋 Providers:*\n`;
+            text += `• \`pollinations\` - FREE, no key needed (default)\n`;
             text += `• \`grok\` - xAI (Grok) — *recommended*\n`;
-            text += `• \`puter\` - Puter (free, needs account)\n`;
-            text += `• \`pollinations\` - Free, no key needed\n`;
             text += `• \`gemini\` - Google Gemini\n`;
             text += `• \`openai\` - OpenAI\n`;
+            text += `• \`puter\` - Puter (free, needs account)\n`;
             text += `• \`custom\` - Custom API\n\n`;
 
             text += `*📋 Commands:*\n`;
-            text += `• \`.cbc provider <grok|puter|pollinations|gemini|openai|custom>\`\n`;
+            text += `• \`.cbc on\` or \`.cbc enable\` - Turn ON chatbot\n`;
+            text += `• \`.cbc off\` or \`.cbc disable\` - Turn OFF chatbot\n`;
+            text += `• \`.cbc provider <pollinations|grok|gemini|openai|puter|custom>\`\n`;
             text += `• \`.cbc apikey <your_api_key>\`\n`;
             text += `• \`.cbc apiurl <your_api_url>\`\n`;
             text += `• \`.cbc mode <public|private>\`\n`;
             text += `• \`.cbc context <your_context>\`\n`;
-            text += `• \`.cbc enable|disable\`\n`;
             text += `• \`.cbc clearhistory\`\n`;
             text += `• \`.cbc temp <0-1>\`\n`;
             text += `• \`.cbc maxtokens <50-4096>\`\n`;
@@ -66,9 +62,10 @@ export default {
             text += `• \`.cbc status\`\n\n`;
             
             text += `💡 *Examples:*\n`;
-            text += `• \`.cbc apikey gsk_xxxxxxxx\`\n`;
-            text += `• \`.cbc provider grok\`\n`;
-            text += `• \`.cbc mode public\``;
+            text += `• \`.cbc on\` - Enable chatbot\n`;
+            text += `• \`.cbc provider pollinations\` - Use free provider\n`;
+            text += `• \`.cbc apikey xai_xxxxxxxx\` - Set Grok key\n`;
+            text += `• \`.cbc mode public\` - Allow everyone to use`;
 
             return await sock.sendMessage(chatId, { text }, { quoted: message });
         }
@@ -76,8 +73,30 @@ export default {
         // === CONFIGURATION ===
         try {
             switch (option) {
+                // 🔥 ON / ENABLE
+                case 'on':
+                case 'enable':
+                    chatbotConfig.set('enabled', true);
+                    await sock.sendMessage(chatId, {
+                        text: '✅ *Chatbot enabled!*\n\n' +
+                              '💡 Mention me with *Nova* or *@Nova* to chat.',
+                        quoted: message
+                    });
+                    break;
+
+                // 🔥 OFF / DISABLE
+                case 'off':
+                case 'disable':
+                    chatbotConfig.set('enabled', false);
+                    await sock.sendMessage(chatId, {
+                        text: '❌ *Chatbot disabled!*\n\n' +
+                              'Use `.cbc on` or `.cbc enable` to turn it back on.',
+                        quoted: message
+                    });
+                    break;
+
                 case 'provider': {
-                    const providers = ['grok', 'puter', 'pollinations', 'gemini', 'openai', 'custom'];
+                    const providers = ['pollinations', 'grok', 'gemini', 'openai', 'puter', 'custom'];
                     if (!providers.includes(value)) {
                         return await sock.sendMessage(chatId, {
                             text: `❌ Invalid provider. Choose: ${providers.join(', ')}`,
@@ -86,7 +105,8 @@ export default {
                     }
                     chatbotConfig.set('provider', value);
                     await sock.sendMessage(chatId, {
-                        text: `✅ Provider changed to: *${value.toUpperCase()}*`,
+                        text: `✅ Provider changed to: *${value.toUpperCase()}*\n\n` +
+                              (value === 'pollinations' ? '🔓 No API key needed!' : '🔑 Don\'t forget to set your API key with `.cbc apikey <key>`'),
                         quoted: message
                     });
                     break;
@@ -101,7 +121,8 @@ export default {
                     }
                     chatbotConfig.set('apiKey', value);
                     await sock.sendMessage(chatId, {
-                        text: `✅ API key updated (${value.slice(0, 8)}...)`,
+                        text: `✅ API key updated (${value.slice(0, 8)}...)\n\n` +
+                              '🔒 Key stored securely.',
                         quoted: message
                     });
                     break;
@@ -129,7 +150,7 @@ export default {
                     }
                     chatbotConfig.set('mode', value);
                     await sock.sendMessage(chatId, {
-                        text: `🔒 Chatbot mode: ${value === 'private' ? '🔒 Private (owner only)' : '🌍 Public (everyone)'}`,
+                        text: `${value === 'private' ? '🔒' : '🌍'} Chatbot mode: ${value === 'private' ? 'Private (owner only)' : 'Public (everyone)'}`,
                         quoted: message
                     });
                     break;
@@ -145,22 +166,6 @@ export default {
                     chatbotService.setContext(null, value);
                     await sock.sendMessage(chatId, {
                         text: `✅ Custom context added (${value.length} characters)`,
-                        quoted: message
-                    });
-                    break;
-
-                case 'enable':
-                    chatbotConfig.set('enabled', true);
-                    await sock.sendMessage(chatId, {
-                        text: '✅ Chatbot enabled!',
-                        quoted: message
-                    });
-                    break;
-
-                case 'disable':
-                    chatbotConfig.set('enabled', false);
-                    await sock.sendMessage(chatId, {
-                        text: '❌ Chatbot disabled',
                         quoted: message
                     });
                     break;
