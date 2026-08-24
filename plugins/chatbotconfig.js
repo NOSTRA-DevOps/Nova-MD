@@ -55,6 +55,8 @@ export default {
       text += `• \`.cbc apikey <your_api_key>\`\n`;
       text += `• \`.cbc apiurl <your_api_url>\`\n`;
       text += `• \`.cbc mode <public|private>\`\n`;
+      text += `• \`.cbc openaimodel <model>\` (default: gpt-4o-mini)\n`;
+      text += `• \`.cbc geminimodel <model>\` (default: gemini-2.0-flash-exp)\n`;
       text += `• \`.cbc context <your_context>\`\n`;
       text += `• \`.cbc clearhistory\`\n`;
       text += `• \`.cbc temp <0-1>\`\n`;
@@ -231,6 +233,34 @@ export default {
           chatbotConfig.set("maxTokens", tokens);
           await sock.sendMessage(chatId, {
             text: `✅ Max tokens set to: ${tokens}`,
+            quoted: message,
+          });
+          break;
+
+        case "openaimodel":
+          if (!value) {
+            return await sock.sendMessage(chatId, {
+              text: "❌ Please provide a model name (e.g., gpt-4o-mini)",
+              quoted: message,
+            });
+          }
+          chatbotConfig.set("openaiModel", value);
+          await sock.sendMessage(chatId, {
+            text: `✅ OpenAI model set to: *${value}*`,
+            quoted: message,
+          });
+          break;
+
+        case "geminimodel":
+          if (!value) {
+            return await sock.sendMessage(chatId, {
+              text: "❌ Please provide a model name (e.g., gemini-2.0-flash-exp)",
+              quoted: message,
+            });
+          }
+          chatbotConfig.set("geminiModel", value);
+          await sock.sendMessage(chatId, {
+            text: `✅ Gemini model set to: *${value}*`,
             quoted: message,
           });
           break;
