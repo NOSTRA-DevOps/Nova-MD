@@ -1,6 +1,6 @@
 #!/bin/bash
 # NOVA-MD Heroku One-Click Deployer
-# Usage: bash <(curl -s https://raw.githubusercontent.com/NOVA-X-Code/NOVA-MD/main/lib/heroku.sh)
+# Usage: bash <(curl -s https://raw.githubusercontent.com/NOSTRA-DevOps/Nova-MD/main/lib/heroku.sh)
 
 set -e
 

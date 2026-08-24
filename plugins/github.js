@@ -10,7 +10,7 @@ export default {
     async handler(sock, message, args, context) {
         const chatId = context.chatId || message.key.remoteJid;
         try {
-            const res = await fetch('https://api.github.com/repos/NOVA-X-Code/NOVA-MD');
+            const res = await fetch('https://api.github.com/repos/NOSTRA-DevOps/Nova-MD');
             if (!res.ok)
                 throw new Error('Error fetching repository data');
             const json = await res.json();

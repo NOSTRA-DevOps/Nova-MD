@@ -1,6 +1,6 @@
 #!/bin/bash
 # NOVA-MD Railway One-Click Deployer
-# Usage: bash <(curl -s https://raw.githubusercontent.com/NOVA-X-Code/NOVA-MD/main/lib/railway.sh)
+# Usage: bash <(curl -s https://raw.githubusercontent.com/NOSTRA-DevOps/Nova-MD/main/lib/railway.sh)
 
 set -e
 
