@@ -90,7 +90,7 @@ export default {
                     externalAdReply: {
                         title: "SYSTEM SETTINGS PANEL",
                         body: "Configuration Status",
-                        thumbnailUrl: "https://raw.githubusercontent.com/NOVA-X-Code/Nova-MD/refs/heads/main/assets/logo.PNG",
+                        thumbnailUrl: "https://raw.githubusercontent.com/NOSTRA-DevOps/Nova-MD/refs/heads/main/assets/logo.PNG",
                         mediaType: 1,
                         renderLargerThumbnail: true
                     }
