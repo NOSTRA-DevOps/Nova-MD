@@ -1,20 +1,20 @@
 import 'dotenv/config';
-import _0x0_0x455738, {
+import _0x0_0x83eef7, {
     existsSync,
     mkdirSync,
     rmSync
 } from 'fs';
-import _0x0_0x29e5ab, { dirname } from 'path';
-import _0x0_0x27c730 from 'chalk';
-import _0x0_0x220400 from 'syntax-error';
-import { parsePhoneNumber as _0x0_0x4afae8 } from 'awesome-phonenumber';
-import _0x0_0x21500a from 'readline';
+import _0x0_0x4a39d5, { dirname } from 'path';
+import _0x0_0x4ea449 from 'chalk';
+import _0x0_0x28c9b4 from 'syntax-error';
+import { parsePhoneNumber as _0x0_0x544355 } from 'awesome-phonenumber';
+import _0x0_0x76712a from 'readline';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 import { smsg } from './lib/myfunc.js';
 import { compileAll } from './lib/compile.js';
-import _0x0_0x138eab, {
+import _0x0_0x5a8dd7, {
     useMultiFileAuthState,
     DisconnectReason,
     fetchLatestBaileysVersion,
@@ -24,10 +24,10 @@ import _0x0_0x138eab, {
     makeCacheableSignalKeyStore,
     delay
 } from '@whiskeysockets/baileys';
-import _0x0_0x18529b from 'node-cache';
-import _0x0_0xb91f69 from 'pino';
-import _0x0_0x39a4e7 from './config.js';
-import _0x0_0x25f433 from './lib/lightweight_store.js';
+import _0x0_0x121341 from 'node-cache';
+import _0x0_0x43e7eb from 'pino';
+import _0x0_0x4016a4 from './config.js';
+import _0x0_0x8f014e from './lib/lightweight_store.js';
 import {
     server,
     PORT
@@ -40,10 +40,10 @@ import {
     handleStatus,
     handleCall
 } from './lib/messageHandler.js';
-import _0x0_0x5f02e9 from './lib/commandHandler.js';
-import _0x0_0x49dc48 from './lib/sessionManager.js';
-_0x0_0x25f433['readFromFile']();
-setInterval(() => _0x0_0x25f433['writeToFile'](), _0x0_0x39a4e7['storeWriteInterval'] || 0x2710);
+import _0x0_0x1e21bf from './lib/commandHandler.js';
+import _0x0_0x47aceb from './lib/sessionManager.js';
+_0x0_0x8f014e['readFromFile']();
+setInterval(() => _0x0_0x8f014e['writeToFile'](), _0x0_0x4016a4['storeWriteInterval'] || 0x2710);
 setInterval(() => {
     if (global['gc']) {
         global['gc']();
@@ -51,8 +51,8 @@ setInterval(() => {
     }
 }, 0xea60);
 setInterval(() => {
-    const _0x370deb = process['memoryUsage']()['rss'] / 0x400 / 0x400;
-    if (_0x370deb > 0x190) {
+    const _0x503dbc = process['memoryUsage']()['rss'] / 0x400 / 0x400;
+    if (_0x503dbc > 0x190) {
         printLog('warning', 'RAM\x20too\x20high\x20(>400MB),\x20restarting\x20bot...');
         process['exit'](0x1);
     }
@@ -95,26 +95,26 @@ const DATA_DEFAULTS = {
     'antilink.json': {},
     'antibadword.json': {}
 };
-_0x0_0x455738['mkdirSync']('./data', { 'recursive': !![] });
+_0x0_0x83eef7['mkdirSync']('./data', { 'recursive': !![] });
 for (const [file, def] of Object['entries'](DATA_DEFAULTS)) {
     const fp = './data/' + file;
-    if (!_0x0_0x455738['existsSync'](fp))
-        _0x0_0x455738['writeFileSync'](fp, JSON['stringify'](def, null, 0x2));
+    if (!_0x0_0x83eef7['existsSync'](fp))
+        _0x0_0x83eef7['writeFileSync'](fp, JSON['stringify'](def, null, 0x2));
 }
 let owner = [];
 try {
-    owner = JSON['parse'](_0x0_0x455738['readFileSync']('./data/owner.json', 'utf-8'));
+    owner = JSON['parse'](_0x0_0x83eef7['readFileSync']('./data/owner.json', 'utf-8'));
 } catch {
     owner = [];
 }
-global['botname'] = _0x0_0x39a4e7['botName'] || 'NOVA-MD';
+global['botname'] = _0x0_0x4016a4['botName'] || 'NOVA-MD';
 global['themeemoji'] = '•';
 const pairingCode = ![];
 const useMobile = process['argv']['includes']('--mobile');
 let rl = null;
 let rlClosed = ![];
-if (process['stdin']['isTTY'] && !_0x0_0x39a4e7['pairingNumber']) {
-    rl = _0x0_0x21500a['createInterface']({
+if (process['stdin']['isTTY'] && !_0x0_0x4016a4['pairingNumber']) {
+    rl = _0x0_0x76712a['createInterface']({
         'input': process['stdin'],
         'output': process['stdout']
     });
@@ -122,11 +122,11 @@ if (process['stdin']['isTTY'] && !_0x0_0x39a4e7['pairingNumber']) {
         rlClosed = !![];
     });
 }
-const question = _0x1cf1ec => {
+const question = _0x2c54b6 => {
     if (rl && !rlClosed) {
-        return new Promise(_0x4ac043 => rl['question'](_0x1cf1ec, _0x4ac043));
+        return new Promise(_0x402cb7 => rl['question'](_0x2c54b6, _0x402cb7));
     } else {
-        return Promise['resolve'](_0x0_0x39a4e7['ownerNumber'] || '237676250509');
+        return Promise['resolve'](_0x0_0x4016a4['ownerNumber'] || '237676250509');
     }
 };
 process['on']('exit', () => {
@@ -139,14 +139,14 @@ process['on']('SIGINT', () => {
     process['exit'](0x0);
 });
 function ensureSessionDirectory() {
-    const _0x1fb4c1 = _0x0_0x29e5ab['join'](__dirname, 'session');
-    if (!existsSync(_0x1fb4c1)) {
-        mkdirSync(_0x1fb4c1, { 'recursive': !![] });
+    const _0x27179f = _0x0_0x4a39d5['join'](__dirname, 'session');
+    if (!existsSync(_0x27179f)) {
+        mkdirSync(_0x27179f, { 'recursive': !![] });
     }
-    return _0x1fb4c1;
+    return _0x27179f;
 }
 function hasValidSession() {
-    return _0x0_0x49dc48['hasValidSession']();
+    return _0x0_0x47aceb['hasValidSession']();
 }
 server['listen'](PORT, () => {
     printLog('success', 'Server\x20listening\x20on\x20port\x20' + PORT);
@@ -154,113 +154,113 @@ server['listen'](PORT, () => {
 });
 async function startNovaXCode() {
     try {
-        const {version: _0x14c75c} = await fetchLatestBaileysVersion();
+        const {version: _0x5464fa} = await fetchLatestBaileysVersion();
         ensureSessionDirectory();
         await delay(0x3e8);
         const {
-            state: _0x165277,
-            saveCreds: _0xd70c20
+            state: _0x3d109e,
+            saveCreds: _0xdd2e78
         } = await useMultiFileAuthState('./session');
-        const _0x1e9f1f = async () => {
+        const _0x35a6df = async () => {
             ensureSessionDirectory();
-            await _0xd70c20();
+            await _0xdd2e78();
         };
-        const _0x487702 = new _0x0_0x18529b();
-        const _0x2ee84f = await _0x0_0x25f433['getSetting']('global', 'stealthMode');
-        const _0xea6f1c = _0x2ee84f && _0x2ee84f['enabled'];
-        const _0x347384 = _0x0_0x138eab({
-            'version': _0x14c75c,
-            'logger': _0x0_0xb91f69({ 'level': 'silent' }),
+        const _0x380e53 = new _0x0_0x121341();
+        const _0x597696 = await _0x0_0x8f014e['getSetting']('global', 'stealthMode');
+        const _0x37819a = _0x597696 && _0x597696['enabled'];
+        const _0x24a328 = _0x0_0x5a8dd7({
+            'version': _0x5464fa,
+            'logger': _0x0_0x43e7eb({ 'level': 'silent' }),
             'browser': Browsers['macOS']('Chrome'),
             'auth': {
-                'creds': _0x165277['creds'],
-                'keys': makeCacheableSignalKeyStore(_0x165277['keys'], _0x0_0xb91f69({ 'level': 'fatal' })['child']({ 'level': 'fatal' }))
+                'creds': _0x3d109e['creds'],
+                'keys': makeCacheableSignalKeyStore(_0x3d109e['keys'], _0x0_0x43e7eb({ 'level': 'fatal' })['child']({ 'level': 'fatal' }))
             },
-            'markOnlineOnConnect': !_0xea6f1c,
+            'markOnlineOnConnect': !_0x37819a,
             'generateHighQualityLinkPreview': !![],
             'syncFullHistory': ![],
-            'getMessage': async _0x16a23f => {
-                const _0x303432 = jidNormalizedUser(_0x16a23f['remoteJid']);
-                const _0x510436 = await _0x0_0x25f433['loadMessage'](_0x303432, _0x16a23f['id']);
-                return _0x510436?.['message'] || '';
+            'getMessage': async _0x221b28 => {
+                const _0x17d5d4 = jidNormalizedUser(_0x221b28['remoteJid']);
+                const _0x2a0872 = await _0x0_0x8f014e['loadMessage'](_0x17d5d4, _0x221b28['id']);
+                return _0x2a0872?.['message'] || '';
             },
-            'msgRetryCounterCache': _0x487702,
+            'msgRetryCounterCache': _0x380e53,
             'defaultQueryTimeoutMs': 0xea60,
             'connectTimeoutMs': 0xea60,
             'keepAliveIntervalMs': 0x2710
         });
-        _0x347384['store'] = _0x0_0x25f433;
-        const _0x9c0c73 = _0x347384['sendPresenceUpdate'];
-        const _0x2e6fac = _0x347384['readMessages'];
-        const _0x981ad1 = _0x347384['sendReceipt'];
-        _0x347384['sendPresenceUpdate'] = async function (..._0x18fa9e) {
-            const _0x590dd7 = await _0x0_0x25f433['getSetting']('global', 'stealthMode');
-            if (_0x590dd7 && _0x590dd7['enabled']) {
+        _0x24a328['store'] = _0x0_0x8f014e;
+        const _0x156c94 = _0x24a328['sendPresenceUpdate'];
+        const _0x3bd584 = _0x24a328['readMessages'];
+        const _0x3d4a61 = _0x24a328['sendReceipt'];
+        _0x24a328['sendPresenceUpdate'] = async function (..._0x1d97fe) {
+            const _0x5403c9 = await _0x0_0x8f014e['getSetting']('global', 'stealthMode');
+            if (_0x5403c9 && _0x5403c9['enabled']) {
                 printLog('info', '👻\x20Blocked\x20presence\x20update\x20(stealth\x20mode)');
                 return;
             }
-            return _0x9c0c73['apply'](this, _0x18fa9e);
+            return _0x156c94['apply'](this, _0x1d97fe);
         };
-        _0x347384['readMessages'] = async function (..._0x2d77b3) {
-            const _0x39bf3d = await _0x0_0x25f433['getSetting']('global', 'stealthMode');
-            if (_0x39bf3d && _0x39bf3d['enabled'])
+        _0x24a328['readMessages'] = async function (..._0xab10ee) {
+            const _0x96566d = await _0x0_0x8f014e['getSetting']('global', 'stealthMode');
+            if (_0x96566d && _0x96566d['enabled'])
                 return;
-            return _0x2e6fac['apply'](this, _0x2d77b3);
+            return _0x3bd584['apply'](this, _0xab10ee);
         };
-        if (_0x981ad1) {
-            _0x347384['sendReceipt'] = async function (..._0x3518b2) {
-                const _0x566fa9 = await _0x0_0x25f433['getSetting']('global', 'stealthMode');
-                if (_0x566fa9 && _0x566fa9['enabled'])
+        if (_0x3d4a61) {
+            _0x24a328['sendReceipt'] = async function (..._0x328bee) {
+                const _0x53ff2e = await _0x0_0x8f014e['getSetting']('global', 'stealthMode');
+                if (_0x53ff2e && _0x53ff2e['enabled'])
                     return;
-                return _0x981ad1['apply'](this, _0x3518b2);
+                return _0x3d4a61['apply'](this, _0x328bee);
             };
         }
-        const _0xafe9a5 = _0x347384['query'];
-        _0x347384['query'] = async function (_0x321bbb, ..._0x2fb984) {
-            const _0x167217 = await _0x0_0x25f433['getSetting']('global', 'stealthMode');
-            if (_0x167217 && _0x167217['enabled']) {
-                if (_0x321bbb && _0x321bbb['tag'] === 'receipt')
+        const _0x53a34 = _0x24a328['query'];
+        _0x24a328['query'] = async function (_0xe5e38d, ..._0x1dc8f0) {
+            const _0x1689a7 = await _0x0_0x8f014e['getSetting']('global', 'stealthMode');
+            if (_0x1689a7 && _0x1689a7['enabled']) {
+                if (_0xe5e38d && _0xe5e38d['tag'] === 'receipt')
                     return;
-                if (_0x321bbb && _0x321bbb['attrs'] && (_0x321bbb['attrs']['type'] === 'read' || _0x321bbb['attrs']['type'] === 'read-self'))
+                if (_0xe5e38d && _0xe5e38d['attrs'] && (_0xe5e38d['attrs']['type'] === 'read' || _0xe5e38d['attrs']['type'] === 'read-self'))
                     return;
             }
-            return _0xafe9a5['apply'](this, [
-                _0x321bbb,
-                ..._0x2fb984
+            return _0x53a34['apply'](this, [
+                _0xe5e38d,
+                ..._0x1dc8f0
             ]);
         };
-        _0x347384['isGhostMode'] = async () => {
-            const _0x3e943c = await _0x0_0x25f433['getSetting']('global', 'stealthMode');
-            return _0x3e943c && _0x3e943c['enabled'];
+        _0x24a328['isGhostMode'] = async () => {
+            const _0x2d106f = await _0x0_0x8f014e['getSetting']('global', 'stealthMode');
+            return _0x2d106f && _0x2d106f['enabled'];
         };
-        _0x347384['ev']['on']('creds.update', _0x1e9f1f);
-        _0x0_0x25f433['bind'](_0x347384['ev']);
-        _0x347384['ev']['on']('messages.upsert', async _0x539a0a => {
+        _0x24a328['ev']['on']('creds.update', _0x35a6df);
+        _0x0_0x8f014e['bind'](_0x24a328['ev']);
+        _0x24a328['ev']['on']('messages.upsert', async _0x45681d => {
             try {
-                const _0x4cc8a9 = _0x539a0a['messages'][0x0];
-                if (!_0x4cc8a9['message'])
+                const _0x3dab5d = _0x45681d['messages'][0x0];
+                if (!_0x3dab5d['message'])
                     return;
-                _0x4cc8a9['message'] = Object['keys'](_0x4cc8a9['message'])[0x0] === 'ephemeralMessage' ? _0x4cc8a9['message']['ephemeralMessage']['message'] : _0x4cc8a9['message'];
-                if (_0x4cc8a9['key'] && _0x4cc8a9['key']['remoteJid'] === 'status@broadcast') {
-                    await handleStatus(_0x347384, _0x539a0a);
+                _0x3dab5d['message'] = Object['keys'](_0x3dab5d['message'])[0x0] === 'ephemeralMessage' ? _0x3dab5d['message']['ephemeralMessage']['message'] : _0x3dab5d['message'];
+                if (_0x3dab5d['key'] && _0x3dab5d['key']['remoteJid'] === 'status@broadcast') {
+                    await handleStatus(_0x24a328, _0x45681d);
                     return;
                 }
-                if (!_0x347384['public'] && !_0x4cc8a9['key']['fromMe'] && _0x539a0a['type'] === 'notify') {
-                    const _0x155a27 = _0x4cc8a9['key']?.['remoteJid']?.['endsWith']('@g.us');
-                    if (!_0x155a27)
+                if (!_0x24a328['public'] && !_0x3dab5d['key']['fromMe'] && _0x45681d['type'] === 'notify') {
+                    const _0x262345 = _0x3dab5d['key']?.['remoteJid']?.['endsWith']('@g.us');
+                    if (!_0x262345)
                         return;
                 }
-                if (_0x4cc8a9['key']['id']['startsWith']('BAE5') && _0x4cc8a9['key']['id']['length'] === 0x10)
+                if (_0x3dab5d['key']['id']['startsWith']('BAE5') && _0x3dab5d['key']['id']['length'] === 0x10)
                     return;
-                if (_0x347384?.['msgRetryCounterCache']) {
-                    _0x347384['msgRetryCounterCache']['clear']();
+                if (_0x24a328?.['msgRetryCounterCache']) {
+                    _0x24a328['msgRetryCounterCache']['clear']();
                 }
                 try {
-                    await handleMessages(_0x347384, _0x539a0a);
-                } catch (_0x42c750) {
-                    printLog('error', 'Error\x20in\x20handleMessages:\x20' + _0x42c750['message']);
-                    if (_0x4cc8a9['key'] && _0x4cc8a9['key']['remoteJid']) {
-                        await _0x347384['sendMessage'](_0x4cc8a9['key']['remoteJid'], {
+                    await handleMessages(_0x24a328, _0x45681d);
+                } catch (_0xe85245) {
+                    printLog('error', 'Error\x20in\x20handleMessages:\x20' + _0xe85245['message']);
+                    if (_0x3dab5d['key'] && _0x3dab5d['key']['remoteJid']) {
+                        await _0x24a328['sendMessage'](_0x3dab5d['key']['remoteJid'], {
                             'text': '❌\x20An\x20error\x20occurred\x20while\x20processing\x20your\x20message.',
                             'contextInfo': {
                                 'forwardingScore': 0x1,
@@ -274,51 +274,51 @@ async function startNovaXCode() {
                         })['catch'](console['error']);
                     }
                 }
-            } catch (_0x4f6c13) {
-                printLog('error', 'Error\x20in\x20messages.upsert:\x20' + _0x4f6c13['message']);
+            } catch (_0x1c2d17) {
+                printLog('error', 'Error\x20in\x20messages.upsert:\x20' + _0x1c2d17['message']);
             }
         });
-        _0x347384['decodeJid'] = _0x36f8f6 => {
-            if (!_0x36f8f6)
-                return _0x36f8f6;
-            if (/:\d+@/gi['test'](_0x36f8f6)) {
-                const _0x36df6e = jidDecode(_0x36f8f6) || {};
-                return _0x36df6e['user'] && _0x36df6e['server'] && _0x36df6e['user'] + '@' + _0x36df6e['server'] || _0x36f8f6;
+        _0x24a328['decodeJid'] = _0x56ae51 => {
+            if (!_0x56ae51)
+                return _0x56ae51;
+            if (/:\d+@/gi['test'](_0x56ae51)) {
+                const _0xb33ca5 = jidDecode(_0x56ae51) || {};
+                return _0xb33ca5['user'] && _0xb33ca5['server'] && _0xb33ca5['user'] + '@' + _0xb33ca5['server'] || _0x56ae51;
             } else
-                return _0x36f8f6;
+                return _0x56ae51;
         };
-        _0x347384['ev']['on']('contacts.update', _0x14118e => {
-            for (const _0x1a1998 of _0x14118e) {
-                const _0x345a66 = _0x347384['decodeJid'](_0x1a1998['id']);
-                if (_0x0_0x25f433 && _0x0_0x25f433['contacts'])
-                    _0x0_0x25f433['contacts'][_0x345a66] = {
-                        'id': _0x345a66,
-                        'name': _0x1a1998['notify']
+        _0x24a328['ev']['on']('contacts.update', _0x1dfb4c => {
+            for (const _0x55532f of _0x1dfb4c) {
+                const _0x3b7811 = _0x24a328['decodeJid'](_0x55532f['id']);
+                if (_0x0_0x8f014e && _0x0_0x8f014e['contacts'])
+                    _0x0_0x8f014e['contacts'][_0x3b7811] = {
+                        'id': _0x3b7811,
+                        'name': _0x55532f['notify']
                     };
             }
         });
-        _0x347384['getName'] = (_0x3fbf62, _0x386c1a = ![]) => {
-            const _0x54e4be = _0x347384['decodeJid'](_0x3fbf62);
-            _0x386c1a = _0x347384['withoutContact'] || _0x386c1a;
-            let _0x545927;
-            if (_0x54e4be['endsWith']('@g.us'))
-                return new Promise(async _0x3bbe75 => {
-                    _0x545927 = _0x0_0x25f433['contacts'][_0x54e4be] || {};
-                    if (!(_0x545927['name'] || _0x545927['subject']))
-                        _0x545927 = _0x347384['groupMetadata'](_0x54e4be) || {};
-                    _0x3bbe75(_0x545927['name'] || _0x545927['subject'] || _0x0_0x4afae8('+' + _0x54e4be['replace']('@s.whatsapp.net', ''))['number']?.['international']);
+        _0x24a328['getName'] = (_0x17c474, _0x15d544 = ![]) => {
+            const _0x58c861 = _0x24a328['decodeJid'](_0x17c474);
+            _0x15d544 = _0x24a328['withoutContact'] || _0x15d544;
+            let _0x5b75c8;
+            if (_0x58c861['endsWith']('@g.us'))
+                return new Promise(async _0x5dbde0 => {
+                    _0x5b75c8 = _0x0_0x8f014e['contacts'][_0x58c861] || {};
+                    if (!(_0x5b75c8['name'] || _0x5b75c8['subject']))
+                        _0x5b75c8 = _0x24a328['groupMetadata'](_0x58c861) || {};
+                    _0x5dbde0(_0x5b75c8['name'] || _0x5b75c8['subject'] || _0x0_0x544355('+' + _0x58c861['replace']('@s.whatsapp.net', ''))['number']?.['international']);
                 });
             else
-                _0x545927 = _0x54e4be === '0@s.whatsapp.net' ? {
-                    'id': _0x54e4be,
+                _0x5b75c8 = _0x58c861 === '0@s.whatsapp.net' ? {
+                    'id': _0x58c861,
                     'name': 'WhatsApp'
-                } : _0x54e4be === _0x347384['decodeJid'](_0x347384['user']['id']) ? _0x347384['user'] : _0x0_0x25f433['contacts'][_0x54e4be] || {};
-            return (_0x386c1a ? '' : _0x545927['name']) || _0x545927['subject'] || _0x545927['verifiedName'] || _0x0_0x4afae8('+' + _0x3fbf62['replace']('@s.whatsapp.net', ''))['number']?.['international'];
+                } : _0x58c861 === _0x24a328['decodeJid'](_0x24a328['user']['id']) ? _0x24a328['user'] : _0x0_0x8f014e['contacts'][_0x58c861] || {};
+            return (_0x15d544 ? '' : _0x5b75c8['name']) || _0x5b75c8['subject'] || _0x5b75c8['verifiedName'] || _0x0_0x544355('+' + _0x17c474['replace']('@s.whatsapp.net', ''))['number']?.['international'];
         };
-        _0x347384['public'] = !![];
-        _0x347384['serializeM'] = _0x494496 => smsg(_0x347384, _0x494496, _0x0_0x25f433);
-        const _0x3f3023 = _0x165277['creds']?.['registered'] === !![];
-        if (_0x3f3023) {
+        _0x24a328['public'] = !![];
+        _0x24a328['serializeM'] = _0x405a8e => smsg(_0x24a328, _0x405a8e, _0x0_0x8f014e);
+        const _0x5b6d75 = _0x3d109e['creds']?.['registered'] === !![];
+        if (_0x5b6d75) {
             if (rl && !rlClosed) {
                 rl['close']();
                 rl = null;
@@ -330,66 +330,66 @@ async function startNovaXCode() {
                 rl = null;
             }
         }
-        _0x347384['ev']['on']('connection.update', async _0x204a49 => {
+        _0x24a328['ev']['on']('connection.update', async _0x558fb9 => {
             const {
-                connection: _0x54496d,
-                lastDisconnect: _0x1f677e,
-                qr: _0xf2246
-            } = _0x204a49;
-            if (_0x54496d === 'open') {
+                connection: _0x460d75,
+                lastDisconnect: _0x246c64,
+                qr: _0x435d9d
+            } = _0x558fb9;
+            if (_0x460d75 === 'open') {
                 printLog('success', 'Bot\x20connected\x20successfully!');
                 try {
-                    const _0x4a7bd6 = await _0x0_0x25f433['getBotMode']();
-                    const _0x4410a0 = process['uptime']();
-                    const _0x3cca50 = Math['floor'](_0x4410a0 / 0xe10);
-                    const _0x295d2e = Math['floor'](_0x4410a0 % 0xe10 / 0x3c);
-                    const _0x1f6f05 = 'https://raw.githubusercontent.com/NOSTRA-DevOps/Nova-MD/refs/heads/main/assets/logo.PNG';
-                    let _0x27a048 = null;
+                    const _0x2ee07b = await _0x0_0x8f014e['getBotMode']();
+                    const _0x9c2b82 = process['uptime']();
+                    const _0x449f40 = Math['floor'](_0x9c2b82 / 0xe10);
+                    const _0x11cdbc = Math['floor'](_0x9c2b82 % 0xe10 / 0x3c);
+                    const _0x5efeea = 'https://raw.githubusercontent.com/NOSTRA-DevOps/Nova-MD/refs/heads/main/assets/logo.PNG';
+                    let _0x5d58ef = null;
                     try {
-                        const _0x194dd9 = await fetch(_0x1f6f05);
-                        if (_0x194dd9['ok']) {
-                            const _0x5bd26b = await _0x194dd9['arrayBuffer']();
-                            _0x27a048 = Buffer['from'](_0x5bd26b);
+                        const _0x665c55 = await fetch(_0x5efeea);
+                        if (_0x665c55['ok']) {
+                            const _0x5441dd = await _0x665c55['arrayBuffer']();
+                            _0x5d58ef = Buffer['from'](_0x5441dd);
                         }
-                    } catch (_0x1cf897) {
-                        const _0x33f8ca = _0x0_0x29e5ab['join'](process['cwd'](), 'assets', 'logo.PNG');
-                        if (_0x0_0x455738['existsSync'](_0x33f8ca)) {
-                            _0x27a048 = _0x0_0x455738['readFileSync'](_0x33f8ca);
+                    } catch (_0x1283f1) {
+                        const _0x37e436 = _0x0_0x4a39d5['join'](process['cwd'](), 'assets', 'logo.PNG');
+                        if (_0x0_0x83eef7['existsSync'](_0x37e436)) {
+                            _0x5d58ef = _0x0_0x83eef7['readFileSync'](_0x37e436);
                         }
                     }
-                    let _0x4d36ad = '╭━━━━『\x20*' + (_0x0_0x39a4e7['botName'] || 'NOVA-MD') + '*\x20』━━⬣\x0a';
-                    _0x4d36ad += '┃\x0a';
-                    _0x4d36ad += '┃\x20✨\x20*Status:*\x20✅\x20ONLINE\x0a';
-                    _0x4d36ad += '┃\x20🤖\x20*Version:*\x20' + (_0x0_0x39a4e7['version'] || '2.0.0') + '\x0a';
-                    _0x4d36ad += '┃\x20⚙️\x20*Mode:*\x20' + _0x4a7bd6['toUpperCase']() + '\x0a';
-                    _0x4d36ad += '┃\x20⏰\x20*Uptime:*\x20' + _0x3cca50 + 'h\x20' + _0x295d2e + 'm\x0a';
-                    _0x4d36ad += '┃\x20📊\x20*Prefixes:*\x20' + _0x0_0x39a4e7['prefixes']['join']('\x20') + '\x0a';
-                    _0x4d36ad += '┃\x20📦\x20*Plugins:*\x20' + _0x0_0x5f02e9['commands']['size'] + '\x0a';
-                    _0x4d36ad += '┃\x20💾\x20*Storage:*\x20' + _0x0_0x25f433['getStats']()['backend']['toUpperCase']() + '\x0a';
-                    _0x4d36ad += '┃\x0a';
-                    _0x4d36ad += '┃━━━━━━━━━━━━━━━━━⬣\x0a';
-                    _0x4d36ad += '┃\x0a';
-                    _0x4d36ad += '┃\x20🌐\x20*JOIN\x20CHANNELS*\x0a';
-                    _0x4d36ad += '┃\x0a';
-                    _0x4d36ad += '┃\x20💬\x20*FaceBook:*\x0a';
-                    _0x4d36ad += '┃\x20https://www.facebook.com/profile.php?id=61591828051151\x0a';
-                    _0x4d36ad += '┃\x0a';
-                    _0x4d36ad += '┃\x20📱\x20*Telegram:*\x0a';
-                    _0x4d36ad += '┃\x20https://t.me/addlist/CpQzYQfWwwxmYTk0\x0a';
-                    _0x4d36ad += '┃\x0a';
-                    _0x4d36ad += '┃\x20▶️\x20*YouTube:*\x0a';
-                    _0x4d36ad += '┃\x20https://youtube.com/@labokingfreesurf\x0a';
-                    _0x4d36ad += '┃\x0a';
-                    _0x4d36ad += '┃━━━━━━━━━━━━━━━━━⬣\x0a';
-                    _0x4d36ad += '┃\x0a';
-                    _0x4d36ad += '┃\x20✨\x20_Powered\x20by\x20NOSTRA._\x0a';
-                    _0x4d36ad += '╰━━━━━━━━━━━━━━━━━⬣';
-                    const _0x352e0b = _0x347384['user']['id']['split'](':')[0x0] + '@s.whatsapp.net';
-                    _0x0_0x39a4e7['ownerNumber'] = _0x352e0b;
-                    if (_0x27a048) {
-                        await _0x347384['sendMessage'](_0x352e0b, {
-                            'image': _0x27a048,
-                            'caption': _0x4d36ad,
+                    let _0x5f31c6 = '╭━━━━『\x20*' + (_0x0_0x4016a4['botName'] || 'NOVA-MD') + '*\x20』━━⬣\x0a';
+                    _0x5f31c6 += '┃\x0a';
+                    _0x5f31c6 += '┃\x20✨\x20*Status:*\x20✅\x20ONLINE\x0a';
+                    _0x5f31c6 += '┃\x20🤖\x20*Version:*\x20' + (_0x0_0x4016a4['version'] || '2.0.0') + '\x0a';
+                    _0x5f31c6 += '┃\x20⚙️\x20*Mode:*\x20' + _0x2ee07b['toUpperCase']() + '\x0a';
+                    _0x5f31c6 += '┃\x20⏰\x20*Uptime:*\x20' + _0x449f40 + 'h\x20' + _0x11cdbc + 'm\x0a';
+                    _0x5f31c6 += '┃\x20📊\x20*Prefixes:*\x20' + _0x0_0x4016a4['prefixes']['join']('\x20') + '\x0a';
+                    _0x5f31c6 += '┃\x20📦\x20*Plugins:*\x20' + _0x0_0x1e21bf['commands']['size'] + '\x0a';
+                    _0x5f31c6 += '┃\x20💾\x20*Storage:*\x20' + _0x0_0x8f014e['getStats']()['backend']['toUpperCase']() + '\x0a';
+                    _0x5f31c6 += '┃\x0a';
+                    _0x5f31c6 += '┃━━━━━━━━━━━━━━━━━⬣\x0a';
+                    _0x5f31c6 += '┃\x0a';
+                    _0x5f31c6 += '┃\x20🌐\x20*JOIN\x20CHANNELS*\x0a';
+                    _0x5f31c6 += '┃\x0a';
+                    _0x5f31c6 += '┃\x20💬\x20*FaceBook:*\x0a';
+                    _0x5f31c6 += '┃\x20https://www.facebook.com/profile.php?id=61591828051151\x0a';
+                    _0x5f31c6 += '┃\x0a';
+                    _0x5f31c6 += '┃\x20📱\x20*Telegram:*\x0a';
+                    _0x5f31c6 += '┃\x20https://t.me/addlist/CpQzYQfWwwxmYTk0\x0a';
+                    _0x5f31c6 += '┃\x0a';
+                    _0x5f31c6 += '┃\x20▶️\x20*YouTube:*\x0a';
+                    _0x5f31c6 += '┃\x20https://youtube.com/@labokingfreesurf\x0a';
+                    _0x5f31c6 += '┃\x0a';
+                    _0x5f31c6 += '┃━━━━━━━━━━━━━━━━━⬣\x0a';
+                    _0x5f31c6 += '┃\x0a';
+                    _0x5f31c6 += '┃\x20✨\x20_Powered\x20by\x20NOSTRA._\x0a';
+                    _0x5f31c6 += '╰━━━━━━━━━━━━━━━━━⬣';
+                    const _0x5294d7 = _0x24a328['user']['id']['split'](':')[0x0] + '@s.whatsapp.net';
+                    _0x0_0x4016a4['ownerNumber'] = _0x5294d7;
+                    if (_0x5d58ef) {
+                        await _0x24a328['sendMessage'](_0x5294d7, {
+                            'image': _0x5d58ef,
+                            'caption': _0x5f31c6,
                             'contextInfo': {
                                 'forwardingScore': 0x1,
                                 'isForwarded': !![],
@@ -401,8 +401,8 @@ async function startNovaXCode() {
                             }
                         });
                     } else {
-                        await _0x347384['sendMessage'](_0x352e0b, {
-                            'text': _0x4d36ad,
+                        await _0x24a328['sendMessage'](_0x5294d7, {
+                            'text': _0x5f31c6,
                             'contextInfo': {
                                 'forwardingScore': 0x1,
                                 'isForwarded': !![],
@@ -415,64 +415,64 @@ async function startNovaXCode() {
                         });
                     }
                     printLog('success', '📥\x20About\x20message\x20sent\x20successfully\x20to\x20your\x20WhatsApp!');
-                } catch (_0x23c1ba) {
-                    printLog('error', 'Failed\x20to\x20send\x20automatic\x20about\x20message:\x20' + _0x23c1ba['message']);
+                } catch (_0x336b89) {
+                    printLog('error', 'Failed\x20to\x20send\x20automatic\x20about\x20message:\x20' + _0x336b89['message']);
                 }
-                const _0xae3193 = await _0x0_0x25f433['getSetting']('global', 'stealthMode');
-                if (_0xae3193 && _0xae3193['enabled']) {
+                const _0x11fabb = await _0x0_0x8f014e['getSetting']('global', 'stealthMode');
+                if (_0x11fabb && _0x11fabb['enabled']) {
                     printLog('info', '👻\x20STEALTH\x20MODE\x20ACTIVE');
                 }
-                printLog('success', 'Connected\x20to\x20=>\x20' + JSON['stringify'](_0x347384['user'], null, 0x2));
+                printLog('success', 'Connected\x20to\x20=>\x20' + JSON['stringify'](_0x24a328['user'], null, 0x2));
                 await delay(0x7cf);
                 try {
-                    owner = JSON['parse'](_0x0_0x455738['readFileSync']('./data/owner.json', 'utf-8'));
-                } catch (_0x2c03dc) {
+                    owner = JSON['parse'](_0x0_0x83eef7['readFileSync']('./data/owner.json', 'utf-8'));
+                } catch (_0x4d4e54) {
                 }
-                printLog('info', '[\x20' + (_0x0_0x39a4e7['botName'] || 'NOVA-MD') + '\x20]');
-                printLog('info', 'WA\x20NUMBER\x20\x20:\x20' + (owner[0x0] || _0x0_0x39a4e7['ownerNumber'] || ''));
+                printLog('info', '[\x20' + (_0x0_0x4016a4['botName'] || 'NOVA-MD') + '\x20]');
+                printLog('info', 'WA\x20NUMBER\x20\x20:\x20' + (owner[0x0] || _0x0_0x4016a4['ownerNumber'] || ''));
                 printLog('success', 'Bot\x20Connected\x20Successfully!');
-                printLog('info', 'Plugins\x20\x20\x20:\x20' + _0x0_0x5f02e9['commands']['size']);
-                printLog('info', 'Prefixes\x20\x20\x20:\x20' + _0x0_0x39a4e7['prefixes']['join'](',\x20'));
-                printLog('store', 'Backend\x20\x20\x20\x20:\x20' + _0x0_0x25f433['getStats']()['backend']);
+                printLog('info', 'Plugins\x20\x20\x20:\x20' + _0x0_0x1e21bf['commands']['size']);
+                printLog('info', 'Prefixes\x20\x20\x20:\x20' + _0x0_0x4016a4['prefixes']['join'](',\x20'));
+                printLog('store', 'Backend\x20\x20\x20\x20:\x20' + _0x0_0x8f014e['getStats']()['backend']);
                 console['log']();
             }
-            if (_0x54496d === 'close') {
-                const _0x2bafbd = _0x1f677e?.['error']?.['output']?.['statusCode'];
-                const _0x2504fe = _0x2bafbd !== DisconnectReason['loggedOut'] && _0x2bafbd !== 0x191;
-                if (_0x2bafbd === DisconnectReason['loggedOut'] || _0x2bafbd === 0x191) {
+            if (_0x460d75 === 'close') {
+                const _0x5e1b6e = _0x246c64?.['error']?.['output']?.['statusCode'];
+                const _0x36b35c = _0x5e1b6e !== DisconnectReason['loggedOut'] && _0x5e1b6e !== 0x191;
+                if (_0x5e1b6e === DisconnectReason['loggedOut'] || _0x5e1b6e === 0x191) {
                     try {
                         rmSync('./session', {
                             'recursive': !![],
                             'force': !![]
                         });
-                    } catch (_0x285c2c) {
+                    } catch (_0xe14078) {
                     }
                     await delay(0xbb8);
                     startNovaXCode();
                     return;
                 }
-                if (_0x2504fe) {
+                if (_0x36b35c) {
                     printLog('connection', 'Reconnecting\x20in\x205\x20seconds...');
                     await delay(0x1388);
                     startNovaXCode();
                 }
             }
         });
-        _0x347384['ev']['on']('call', async _0x4d06bc => {
-            await handleCall(_0x347384, _0x4d06bc);
+        _0x24a328['ev']['on']('call', async _0xdd4309 => {
+            await handleCall(_0x24a328, _0xdd4309);
         });
-        _0x347384['ev']['on']('group-participants.update', async _0xfffe21 => {
-            await handleGroupParticipantUpdate(_0x347384, _0xfffe21);
+        _0x24a328['ev']['on']('group-participants.update', async _0x18d3d7 => {
+            await handleGroupParticipantUpdate(_0x24a328, _0x18d3d7);
         });
-        _0x347384['ev']['on']('status.update', async _0x4c92fb => {
-            await handleStatus(_0x347384, _0x4c92fb);
+        _0x24a328['ev']['on']('status.update', async _0x2a0ab6 => {
+            await handleStatus(_0x24a328, _0x2a0ab6);
         });
-        _0x347384['ev']['on']('messages.reaction', async _0x320192 => {
-            await handleStatus(_0x347384, _0x320192);
+        _0x24a328['ev']['on']('messages.reaction', async _0x3d6b04 => {
+            await handleStatus(_0x24a328, _0x3d6b04);
         });
-        return _0x347384;
-    } catch (_0x278750) {
-        printLog('error', 'Error\x20in\x20startNovaXCode:\x20' + _0x278750['message']);
+        return _0x24a328;
+    } catch (_0x4509b7) {
+        printLog('error', 'Error\x20in\x20startNovaXCode:\x20' + _0x4509b7['message']);
         if (rl && !rlClosed) {
             rl['close']();
             rl = null;
@@ -483,41 +483,41 @@ async function startNovaXCode() {
 }
 async function waitForSessionCreation() {
     printLog('info', '🔄\x20Waiting\x20for\x20session\x20to\x20be\x20created\x20via\x20web\x20interface...');
-    printLog('info', '📱\x20Open\x20http://localhost:' + (_0x0_0x39a4e7['port'] || 0x1388) + '/pairing\x20in\x20your\x20browser\x20if\x20it\x27s\x20local');
+    printLog('info', '📱\x20Open\x20http://localhost:' + (_0x0_0x4016a4['port'] || 0x1388) + '/pairing\x20in\x20your\x20browser\x20if\x20it\x27s\x20local');
     printLog('info', '📱\x20For\x20web\x20servic\x20deployment,\x20click\x20the\x20service\x20URL\x20and\x20add\x20/pairing\x20at\x20the\x20end');
-    const _0x5f4804 = 0x1e * 0x3c * 0x3e8;
-    const _0x3aa7e8 = Date['now']();
-    const _0xeff2f6 = 0xbb8;
-    return new Promise((_0x10f7d8, _0x14140e) => {
-        const _0x3ffb49 = setInterval(() => {
+    const _0x57eafb = 0x1e * 0x3c * 0x3e8;
+    const _0x3f8a30 = Date['now']();
+    const _0x5872bb = 0xbb8;
+    return new Promise((_0x31d5e8, _0x2ccbaf) => {
+        const _0x57ccb3 = setInterval(() => {
             if (hasValidSession()) {
-                clearInterval(_0x3ffb49);
+                clearInterval(_0x57ccb3);
                 printLog('success', '✅\x20Session\x20detected!\x20Starting\x20bot...');
-                _0x10f7d8();
+                _0x31d5e8();
             }
-            if (Date['now']() - _0x3aa7e8 > _0x5f4804) {
-                clearInterval(_0x3ffb49);
-                _0x14140e(new Error('Session\x20creation\x20timeout\x20(30\x20minutes)'));
+            if (Date['now']() - _0x3f8a30 > _0x57eafb) {
+                clearInterval(_0x57ccb3);
+                _0x2ccbaf(new Error('Session\x20creation\x20timeout\x20(30\x20minutes)'));
             }
-        }, _0xeff2f6);
+        }, _0x5872bb);
     });
 }
 async function main() {
     await compileAll();
-    await _0x0_0x5f02e9['loadCommands']();
+    await _0x0_0x1e21bf['loadCommands']();
     printLog('info', 'Starting\x20NOVA-MD\x20BOT...');
     if (hasValidSession()) {
         printLog('success', '✅\x20Valid\x20session\x20found,\x20starting\x20bot...');
         await delay(0xbb8);
-        startNovaXCode()['catch'](_0x41792d => {
-            printLog('error', 'Fatal\x20error:\x20' + _0x41792d['message']);
+        startNovaXCode()['catch'](_0x110ae6 => {
+            printLog('error', 'Fatal\x20error:\x20' + _0x110ae6['message']);
             if (rl && !rlClosed)
                 rl['close']();
             process['exit'](0x1);
         });
     } else {
         printLog('info', '🌐\x20No\x20session\x20found.\x20Launching\x20web\x20pairing\x20interface...');
-        printLog('info', '📱\x20Open\x20http://localhost:' + (_0x0_0x39a4e7['port'] || 0x1388) + '/pairing\x20in\x20your\x20browser\x20to\x20connect\x20WhatsApp');
+        printLog('info', '📱\x20Open\x20http://localhost:' + (_0x0_0x4016a4['port'] || 0x1388) + '/pairing\x20in\x20your\x20browser\x20to\x20connect\x20WhatsApp');
         printLog('info', '📱\x20For\x20Render:\x20https://votre-bot.onrender.com/pairing');
         printLog('info', '');
         printLog('info', 'Choose\x20one\x20of\x20these\x20methods:');
@@ -528,14 +528,14 @@ async function main() {
             await waitForSessionCreation();
             printLog('success', '✅\x20Session\x20detected!\x20Starting\x20bot...');
             await delay(0xbb8);
-            startNovaXCode()['catch'](_0x50f878 => {
-                printLog('error', 'Fatal\x20error:\x20' + _0x50f878['message']);
+            startNovaXCode()['catch'](_0x327a3d => {
+                printLog('error', 'Fatal\x20error:\x20' + _0x327a3d['message']);
                 if (rl && !rlClosed)
                     rl['close']();
                 process['exit'](0x1);
             });
-        } catch (_0x4148b5) {
-            printLog('error', 'Session\x20creation\x20failed:\x20' + _0x4148b5['message']);
+        } catch (_0x56e5c1) {
+            printLog('error', 'Session\x20creation\x20failed:\x20' + _0x56e5c1['message']);
             if (rl && !rlClosed)
                 rl['close']();
             process['exit'](0x1);
@@ -543,38 +543,38 @@ async function main() {
     }
 }
 main();
-const sessionDir = _0x0_0x29e5ab['join'](process['cwd'](), 'session');
+const sessionDir = _0x0_0x4a39d5['join'](process['cwd'](), 'session');
 setInterval(() => {
-    if (!_0x0_0x455738['existsSync'](sessionDir))
+    if (!_0x0_0x83eef7['existsSync'](sessionDir))
         return;
-    _0x0_0x455738['readdir'](sessionDir, (_0x5d7b54, _0x9a3cd9) => {
-        if (_0x5d7b54)
+    _0x0_0x83eef7['readdir'](sessionDir, (_0x57a7d8, _0x1ec946) => {
+        if (_0x57a7d8)
             return;
-        for (const _0x252f85 of _0x9a3cd9) {
-            if (_0x252f85 === 'creds.json')
+        for (const _0x45e30 of _0x1ec946) {
+            if (_0x45e30 === 'creds.json')
                 continue;
-            if (_0x252f85['startsWith']('app-state-sync-key-'))
+            if (_0x45e30['startsWith']('app-state-sync-key-'))
                 continue;
-            _0x0_0x455738['unlink'](_0x0_0x29e5ab['join'](sessionDir, _0x252f85), () => {
+            _0x0_0x83eef7['unlink'](_0x0_0x4a39d5['join'](sessionDir, _0x45e30), () => {
             });
         }
     });
 }, 0x3 * 0x3c * 0x3e8);
-const customTemp = _0x0_0x29e5ab['join'](process['cwd'](), 'temp');
-if (!_0x0_0x455738['existsSync'](customTemp))
-    _0x0_0x455738['mkdirSync'](customTemp, { 'recursive': !![] });
+const customTemp = _0x0_0x4a39d5['join'](process['cwd'](), 'temp');
+if (!_0x0_0x83eef7['existsSync'](customTemp))
+    _0x0_0x83eef7['mkdirSync'](customTemp, { 'recursive': !![] });
 process.env.TMPDIR = customTemp;
 process.env.TEMP = customTemp;
 process.env.TMP = customTemp;
 setInterval(() => {
-    _0x0_0x455738['readdir'](customTemp, (_0x8a3c16, _0x263ab1) => {
-        if (_0x8a3c16)
+    _0x0_0x83eef7['readdir'](customTemp, (_0x16f229, _0x112c59) => {
+        if (_0x16f229)
             return;
-        for (const _0x53999e of _0x263ab1) {
-            const _0x4b2145 = _0x0_0x29e5ab['join'](customTemp, _0x53999e);
-            _0x0_0x455738['stat'](_0x4b2145, (_0x1cd957, _0x421b17) => {
-                if (!_0x1cd957 && Date['now']() - _0x421b17['mtimeMs'] > 0x3 * 0x3c * 0x3c * 0x3e8) {
-                    _0x0_0x455738['unlink'](_0x4b2145, () => {
+        for (const _0x55ad27 of _0x112c59) {
+            const _0x6a5035 = _0x0_0x4a39d5['join'](customTemp, _0x55ad27);
+            _0x0_0x83eef7['stat'](_0x6a5035, (_0x166656, _0x12be60) => {
+                if (!_0x166656 && Date['now']() - _0x12be60['mtimeMs'] > 0x3 * 0x3c * 0x3c * 0x3e8) {
+                    _0x0_0x83eef7['unlink'](_0x6a5035, () => {
                     });
                 }
             });
@@ -582,50 +582,50 @@ setInterval(() => {
     });
 }, 0x1 * 0x3c * 0x3c * 0x3e8);
 const folders = [
-    _0x0_0x29e5ab['join'](__dirname, './lib'),
-    _0x0_0x29e5ab['join'](__dirname, './plugins')
+    _0x0_0x4a39d5['join'](__dirname, './lib'),
+    _0x0_0x4a39d5['join'](__dirname, './plugins')
 ];
-folders['forEach'](_0x285aec => {
-    if (!_0x0_0x455738['existsSync'](_0x285aec))
+folders['forEach'](_0x2a3f4b => {
+    if (!_0x0_0x83eef7['existsSync'](_0x2a3f4b))
         return;
-    _0x0_0x455738['readdirSync'](_0x285aec)['filter'](_0x1e79a2 => _0x1e79a2['endsWith']('.js'))['forEach'](_0x1e334e => {
-        const _0x3e7ba6 = _0x0_0x29e5ab['join'](_0x285aec, _0x1e334e);
+    _0x0_0x83eef7['readdirSync'](_0x2a3f4b)['filter'](_0x3696c7 => _0x3696c7['endsWith']('.js'))['forEach'](_0x46c360 => {
+        const _0x572bea = _0x0_0x4a39d5['join'](_0x2a3f4b, _0x46c360);
         try {
-            const _0x5d1546 = _0x0_0x455738['readFileSync'](_0x3e7ba6, 'utf-8');
-            const _0x549301 = _0x0_0x220400(_0x5d1546, _0x1e334e, {
+            const _0x5e30c4 = _0x0_0x83eef7['readFileSync'](_0x572bea, 'utf-8');
+            const _0x5d26ee = _0x0_0x28c9b4(_0x5e30c4, _0x46c360, {
                 'sourceType': 'module',
                 'allowAwaitOutsideFunction': !![]
             });
-            if (_0x549301) {
-                console['error'](_0x0_0x27c730['red']('❌\x20Syntax\x20error\x20in\x20' + _0x3e7ba6 + ':\x0a' + _0x549301));
+            if (_0x5d26ee) {
+                console['error'](_0x0_0x4ea449['red']('❌\x20Syntax\x20error\x20in\x20' + _0x572bea + ':\x0a' + _0x5d26ee));
             }
-        } catch (_0x26c5a7) {
-            console['error'](_0x0_0x27c730['yellow']('⚠️\x20Cannot\x20read\x20file\x20' + _0x3e7ba6 + ':\x0a' + _0x26c5a7));
+        } catch (_0x7e9336) {
+            console['error'](_0x0_0x4ea449['yellow']('⚠️\x20Cannot\x20read\x20file\x20' + _0x572bea + ':\x0a' + _0x7e9336));
         }
     });
 });
-process['on']('uncaughtException', _0xff92c7 => {
-    printLog('error', 'Uncaught\x20Exception:\x20' + _0xff92c7['message']);
-    console['error'](_0xff92c7['stack']);
+process['on']('uncaughtException', _0x51e905 => {
+    printLog('error', 'Uncaught\x20Exception:\x20' + _0x51e905['message']);
+    console['error'](_0x51e905['stack']);
     writeErrorLog({
         'type': 'uncaughtException',
-        'error': _0xff92c7['message'],
-        'stack': _0xff92c7['stack'],
+        'error': _0x51e905['message'],
+        'stack': _0x51e905['stack'],
         'timestamp': new Date()['toISOString']()
     });
 });
-process['on']('unhandledRejection', _0x44555c => {
-    printLog('error', 'Unhandled\x20Rejection:\x20' + _0x44555c['message']);
-    console['error'](_0x44555c['stack']);
+process['on']('unhandledRejection', _0x3c2112 => {
+    printLog('error', 'Unhandled\x20Rejection:\x20' + _0x3c2112['message']);
+    console['error'](_0x3c2112['stack']);
     writeErrorLog({
         'type': 'unhandledRejection',
-        'error': _0x44555c['message'],
-        'stack': _0x44555c['stack'],
+        'error': _0x3c2112['message'],
+        'stack': _0x3c2112['stack'],
         'timestamp': new Date()['toISOString']()
     });
 });
-server['on']('error', _0x21c1a1 => {
-    if (_0x21c1a1['code'] === 'EADDRINUSE') {
+server['on']('error', _0x18112f => {
+    if (_0x18112f['code'] === 'EADDRINUSE') {
         printLog('error', 'Address\x20localhost:' + PORT + '\x20in\x20use');
         writeErrorLog({
             'type': 'serverError',
@@ -634,11 +634,11 @@ server['on']('error', _0x21c1a1 => {
         });
         server['close']();
     } else {
-        printLog('error', 'Server\x20error:\x20' + _0x21c1a1['message']);
+        printLog('error', 'Server\x20error:\x20' + _0x18112f['message']);
         writeErrorLog({
             'type': 'serverError',
-            'error': _0x21c1a1['message'],
-            'stack': _0x21c1a1['stack'],
+            'error': _0x18112f['message'],
+            'stack': _0x18112f['stack'],
             'timestamp': new Date()['toISOString']()
         });
     }

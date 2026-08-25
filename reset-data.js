@@ -1,6 +1,6 @@
-import _0x0_0x4ee715 from 'fs';
-import _0x0_0x5ba56f from 'path';
-const DATA_DIR = _0x0_0x5ba56f['join'](process['cwd'](), 'data');
+import _0x0_0x15d06a from 'fs';
+import _0x0_0x32d7ab from 'path';
+const DATA_DIR = _0x0_0x32d7ab['join'](process['cwd'](), 'data');
 const defaults = {
     'autoStatus.json': { 'enabled': ![] },
     'autoread.json': { 'enabled': ![] },
@@ -47,11 +47,11 @@ const defaults = {
     'polls.json': { 'polls': [] },
     'baileys_store.json': {}
 };
-if (!_0x0_0x4ee715['existsSync'](DATA_DIR))
-    _0x0_0x4ee715['mkdirSync'](DATA_DIR, { 'recursive': !![] });
+if (!_0x0_0x15d06a['existsSync'](DATA_DIR))
+    _0x0_0x15d06a['mkdirSync'](DATA_DIR, { 'recursive': !![] });
 for (const [file, value] of Object['entries'](defaults)) {
-    const filePath = _0x0_0x5ba56f['join'](DATA_DIR, file);
-    _0x0_0x4ee715['writeFileSync'](filePath, JSON['stringify'](value, null, 0x2));
+    const filePath = _0x0_0x32d7ab['join'](DATA_DIR, file);
+    _0x0_0x15d06a['writeFileSync'](filePath, JSON['stringify'](value, null, 0x2));
     console['log']('✅\x20Reset:\x20' + file);
 }
 console['log']('\x0a✅\x20All\x20data\x20files\x20reset\x20to\x20defaults!');
