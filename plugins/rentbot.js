@@ -21,7 +21,8 @@ import {
     startClone,
     checkAndCleanExpiredClones
 } from '../lib/cloneManager.js';
-import isOwnerOrSudo from '../lib/isOwner.js';
+import isOwnerOrSudo, { cleanJid, getOwnerList } from '../lib/isOwner.js';
+import config from '../config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -64,25 +65,94 @@ async function testDatabaseConnection(dbUrl) {
 }
 
 // ============================================================
+// GESTION DES PROPRIÉTAIRES
+// ============================================================
+
+async function addOwner(number) {
+    try {
+        const ownerPath = './data/owner.json';
+        let owners = [];
+        
+        if (fs.existsSync(ownerPath)) {
+            owners = JSON.parse(fs.readFileSync(ownerPath, 'utf-8'));
+        } else {
+            fs.mkdirSync('./data', { recursive: true });
+        }
+        
+        const cleanNumber = number.replace(/[^0-9]/g, '');
+        if (!owners.includes(cleanNumber)) {
+            owners.push(cleanNumber);
+            fs.writeFileSync(ownerPath, JSON.stringify(owners, null, 2));
+            return { success: true, message: 'Owner added successfully' };
+        }
+        return { success: false, message: 'Owner already exists' };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+}
+
+async function removeOwner(number) {
+    try {
+        const ownerPath = './data/owner.json';
+        if (!fs.existsSync(ownerPath)) return { success: false, message: 'No owners found' };
+        
+        const owners = JSON.parse(fs.readFileSync(ownerPath, 'utf-8'));
+        const cleanNumber = number.replace(/[^0-9]/g, '');
+        const index = owners.indexOf(cleanNumber);
+        
+        if (index !== -1) {
+            owners.splice(index, 1);
+            fs.writeFileSync(ownerPath, JSON.stringify(owners, null, 2));
+            return { success: true, message: 'Owner removed successfully' };
+        }
+        return { success: false, message: 'Owner not found' };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+}
+
+async function listOwners() {
+    try {
+        const ownerPath = './data/owner.json';
+        if (!fs.existsSync(ownerPath)) return [];
+        
+        const owners = JSON.parse(fs.readFileSync(ownerPath, 'utf-8'));
+        return owners;
+    } catch (error) {
+        return [];
+    }
+}
+
+// ============================================================
 // VÉRIFICATION DU PROPRIÉTAIRE PRINCIPAL
 // ============================================================
 
 async function isMainOwner(sock, senderId, chatId) {
+    // 1. Vérifier si c'est le propriétaire principal via isOwnerOrSudo
     const isOwner = await isOwnerOrSudo(senderId, sock, chatId);
+    
+    // 2. Vérifier si c'est le bot principal lui-même
     const isFromMe = senderId === sock.user.id || 
                      senderId === `${sock.user.id.split(':')[0]}@s.whatsapp.net`;
     
+    if (isOwner || isFromMe) {
+        return true;
+    }
+    
+    // 3. Vérifier si c'est un clone (le propriétaire du clone peut gérer son propre clone)
     try {
-        const ownerData = JSON.parse(fs.readFileSync('./data/owner.json', 'utf-8'));
-        const senderNumber = senderId.split('@')[0];
-        if (ownerData.includes(senderNumber)) {
+        const clones = await getAllClonesFromMainDB();
+        const senderNumber = cleanJid(senderId);
+        const clone = clones.find(c => c.phoneNumber === senderNumber);
+        if (clone) {
+            // Le numéro du clone peut gérer son propre clone
             return true;
         }
     } catch (_e) {
         // Ignorer l'erreur
     }
     
-    return isOwner || isFromMe;
+    return false;
 }
 
 // ============================================================
@@ -94,7 +164,7 @@ export default {
     aliases: ['botclone', 'clonebot'],
     category: 'owner',
     description: 'Create bot clones with optional expiry',
-    usage: '.rentbot [create|list|delete|clean] [params]',
+    usage: '.rentbot [create|list|delete|clean|addowner|rmowner|owners] [params]',
     ownerOnly: true,
     async handler(sock, message, args, context) {
         const { chatId } = context;
@@ -127,6 +197,80 @@ export default {
         }
 
         // ============================================================
+        // LIST OWNERS
+        // ============================================================
+        if (subCommand === 'owners' || subCommand === 'listowners') {
+            const owners = await listOwners();
+            const mainOwner = config.ownerNumber || 'Not set';
+            
+            let text = `*👑 OWNERS LIST*\n\n`;
+            text += `📱 *Main Owner:* \`${mainOwner}\`\n\n`;
+            
+            if (owners.length === 0) {
+                text += '📋 *Additional owners:* None\n';
+            } else {
+                text += `📋 *Additional owners:* (${owners.length})\n`;
+                owners.forEach((owner, index) => {
+                    text += `  ${index + 1}. \`${owner}\`\n`;
+                });
+            }
+            
+            text += '\n📌 *Commands:*\n';
+            text += '• `.rentbot addowner 23765976XXXX` - Add owner\n';
+            text += '• `.rentbot rmowner 23765976XXXX` - Remove owner';
+            
+            return await sock.sendMessage(chatId, { text }, { quoted: message });
+        }
+
+        // ============================================================
+        // ADD OWNER
+        // ============================================================
+        if (subCommand === 'addowner') {
+            const number = args[1]?.replace(/[^0-9]/g, '');
+            if (!number) {
+                return await sock.sendMessage(chatId, {
+                    text: '❌ *Please specify a phone number!*\n\n📌 *Usage:* `.rentbot addowner 23765976XXXX`'
+                }, { quoted: message });
+            }
+            
+            const result = await addOwner(number);
+            if (result.success) {
+                await sock.sendMessage(chatId, {
+                    text: `✅ *Owner added!*\n\n📱 \`${number}\` can now manage the bot and clones.`
+                }, { quoted: message });
+            } else {
+                await sock.sendMessage(chatId, {
+                    text: `ℹ️ ${result.message}`
+                }, { quoted: message });
+            }
+            return;
+        }
+
+        // ============================================================
+        // REMOVE OWNER
+        // ============================================================
+        if (subCommand === 'rmowner' || subCommand === 'removeowner') {
+            const number = args[1]?.replace(/[^0-9]/g, '');
+            if (!number) {
+                return await sock.sendMessage(chatId, {
+                    text: '❌ *Please specify a phone number!*\n\n📌 *Usage:* `.rentbot rmowner 23765976XXXX`'
+                }, { quoted: message });
+            }
+            
+            const result = await removeOwner(number);
+            if (result.success) {
+                await sock.sendMessage(chatId, {
+                    text: `✅ *Owner removed!*\n\n📱 \`${number}\` can no longer manage the bot.`
+                }, { quoted: message });
+            } else {
+                await sock.sendMessage(chatId, {
+                    text: `ℹ️ ${result.message}`
+                }, { quoted: message });
+            }
+            return;
+        }
+
+        // ============================================================
         // LIST CLONES
         // ============================================================
         if (subCommand === 'list' || subCommand === 'ls' || subCommand === 'status') {
@@ -139,7 +283,6 @@ export default {
             }
 
             let text = `*📋 CLONE LIST* (${clones.length})\n\n`;
-            text += '🔒 *Owner only*\n\n';
             
             const online = clones.filter(c => c.status === 'online');
             const configured = clones.filter(c => c.status === 'configured' || c.status === 'active');
@@ -210,7 +353,10 @@ export default {
             text += '• `.rentbot create <phone> <db_url> <days?>` - With DB\n';
             text += '• `.rentbot delete <phone>` - Delete clone\n';
             text += '• `.rentbot list` - Show this list\n';
-            text += '• `.rentbot clean` - Remove expired clones';
+            text += '• `.rentbot clean` - Remove expired clones\n';
+            text += '• `.rentbot addowner <phone>` - Add owner\n';
+            text += '• `.rentbot rmowner <phone>` - Remove owner\n';
+            text += '• `.rentbot owners` - List owners';
 
             return await sock.sendMessage(chatId, { text }, { quoted: message });
         }
@@ -416,7 +562,11 @@ export default {
                   '🗑️ *DELETE:*\n' +
                   '`.rentbot delete 23765976XXXX`\n\n' +
                   '🧹 *CLEAN:*\n' +
-                  '`.rentbot clean` - Remove expired clones'
+                  '`.rentbot clean` - Remove expired clones\n\n' +
+                  '👑 *OWNERS:*\n' +
+                  '`.rentbot addowner 23765976XXXX` - Add owner\n' +
+                  '`.rentbot rmowner 23765976XXXX` - Remove owner\n' +
+                  '`.rentbot owners` - List owners'
         }, { quoted: message });
     }
 };

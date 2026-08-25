@@ -1,10 +1,40 @@
 import 'dotenv/config';
+import fs from 'fs-extra';
+
 const _prefixes = process.env.PREFIXES ? process.env.PREFIXES.split(',') : ['-', '$', '#'];
+
+// Fonction pour obtenir le numéro du propriétaire
+function getOwnerNumber() {
+    // Si un OWNER_NUMBER est défini dans .env, l'utiliser
+    if (process.env.OWNER_NUMBER && process.env.OWNER_NUMBER.trim() !== '') {
+        return process.env.OWNER_NUMBER;
+    }
+    
+    // Sinon, essayer de lire depuis la session
+    try {
+        const credsPath = './session/creds.json';
+        if (fs.existsSync(credsPath)) {
+            const creds = JSON.parse(fs.readFileSync(credsPath, 'utf-8'));
+            if (creds.me && creds.me.id) {
+                // Extraire le numéro du JID
+                const jid = creds.me.id;
+                const phoneNumber = jid.split(':')[0].split('@')[0];
+                return phoneNumber;
+            }
+        }
+    } catch (error) {
+        console.log('⚠️ Could not read owner number from session');
+    }
+    
+    // Valeur par défaut si rien n'est trouvé
+    return '';
+}
+
 const config = {
     // Bot Identity
     botName: process.env.BOT_NAME || 'NOVA-MD',
     botOwner: process.env.BOT_OWNER || 'NOSTRA',
-    ownerNumber: process.env.OWNER_NUMBER || '',
+    ownerNumber: getOwnerNumber(),
     author:'NOSTRA',
     packname:'NOVA-MD',
     description: process.env.DESCRIPTION || 'High performance multi-device WhatsApp bot',
@@ -53,4 +83,5 @@ const config = {
         'https://api-fgmods.ddns.net': 'fg-dylux'
     }
 };
+
 export default config;
