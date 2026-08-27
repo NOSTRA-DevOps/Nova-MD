@@ -21,7 +21,7 @@ import {
     startClone,
     checkAndCleanExpiredClones
 } from '../lib/cloneManager.js';
-import isOwnerOrSudo, { cleanJid, getOwnerList } from '../lib/isOwner.js';
+import isOwnerOnly from '../lib/isOwner.js';
 import config from '../config.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -123,37 +123,6 @@ async function listOwners() {
     }
 }
 
-// ============================================================
-// VÉRIFICATION DU PROPRIÉTAIRE PRINCIPAL
-// ============================================================
-
-async function isMainOwner(sock, senderId, chatId) {
-    // 1. Vérifier si c'est le propriétaire principal via isOwnerOrSudo
-    const isOwner = await isOwnerOrSudo(senderId, sock, chatId);
-    
-    // 2. Vérifier si c'est le bot principal lui-même
-    const isFromMe = senderId === sock.user.id || 
-                     senderId === `${sock.user.id.split(':')[0]}@s.whatsapp.net`;
-    
-    if (isOwner || isFromMe) {
-        return true;
-    }
-    
-    // 3. Vérifier si c'est un clone (le propriétaire du clone peut gérer son propre clone)
-    try {
-        const clones = await getAllClonesFromMainDB();
-        const senderNumber = cleanJid(senderId);
-        const clone = clones.find(c => c.phoneNumber === senderNumber);
-        if (clone) {
-            // Le numéro du clone peut gérer son propre clone
-            return true;
-        }
-    } catch (_e) {
-        // Ignorer l'erreur
-    }
-    
-    return false;
-}
 
 // ============================================================
 // MAIN COMMAND
@@ -167,18 +136,14 @@ export default {
     usage: '.rentbot [create|list|delete|clean|addowner|rmowner|owners] [params]',
     ownerOnly: true,
     async handler(sock, message, args, context) {
-        const { chatId } = context;
-        const senderId = message.key.participant || message.key.remoteJid;
+        const chatId = context.chatId || message.key.remoteJid;
+            const isOwner = await isOwnerOnly(
+              message.key.participant || message.key.remoteJid,
+            );
         
-        const isMainOwnerValue = await isMainOwner(sock, senderId, chatId);
-        
-        if (!isMainOwnerValue) {
-            return await sock.sendMessage(chatId, {
-                text: '❌ *You are not authorized to use this command!*\n\n' +
-                      '🔒 This command is restricted to the **bot owner** only.'
-            }, { quoted: message });
-        }
-
+            if (!isOwner && !message.key.fromMe) {
+              return;
+            }
         const subCommand = args[0]?.toLowerCase();
 
         // ============================================================
