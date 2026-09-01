@@ -1,42 +1,106 @@
 import 'dotenv/config';
 import fs from 'fs-extra';
 
-const _prefixes = process.env.PREFIXES ? process.env.PREFIXES.split(',') : ['-', '$', '#'];
-
 // Fonction pour obtenir le numéro du propriétaire
 function getOwnerNumber() {
-    // Si un OWNER_NUMBER est défini dans .env, l'utiliser
+    // 1. D'abord, essayer depuis data/config.json (persistant)
+    try {
+        const configPath = './data/config.json';
+        if (fs.existsSync(configPath)) {
+            const configData = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+            if (configData.ownerNumber && configData.ownerNumber.trim() !== '') {
+                return configData.ownerNumber;
+            }
+        }
+    } catch (error) {
+        console.log('⚠️ Could not read config.json:', error.message);
+    }
+    
+    // 2. Ensuite, essayer depuis .env
     if (process.env.OWNER_NUMBER && process.env.OWNER_NUMBER.trim() !== '') {
         return process.env.OWNER_NUMBER;
     }
     
-    // Sinon, essayer de lire depuis la session
+    // 3. Sinon, essayer de lire depuis la session (creds.json)
     try {
         const credsPath = './session/creds.json';
         if (fs.existsSync(credsPath)) {
             const creds = JSON.parse(fs.readFileSync(credsPath, 'utf-8'));
-            if (creds.me && creds.me.id) {
-                // Extraire le numéro du JID
-                const jid = creds.me.id;
+            let jid = null;
+            
+            if (creds.me) {
+                if (typeof creds.me === 'string') {
+                    jid = creds.me;
+                } else if (creds.me.id) {
+                    jid = creds.me.id;
+                } else if (creds.me.user) {
+                    jid = creds.me.user;
+                } else if (creds.me.jid) {
+                    jid = creds.me.jid;
+                }
+            }
+            
+            if (!jid && creds.account) {
+                if (creds.account.jid) jid = creds.account.jid;
+                else if (creds.account.id) jid = creds.account.id;
+            }
+            
+            if (jid) {
                 const phoneNumber = jid.split(':')[0].split('@')[0];
-                return phoneNumber;
+                if (phoneNumber && /^\d+$/.test(phoneNumber)) {
+                    return phoneNumber;
+                }
             }
         }
     } catch (error) {
-        console.log('⚠️ Could not read owner number from session');
+        console.log('⚠️ Could not read owner number from session:', error.message);
     }
     
-    // Valeur par défaut si rien n'est trouvé
+    // 4. Dernier recours: essayer depuis data/owner.json
+    try {
+        const ownerPath = './data/owner.json';
+        if (fs.existsSync(ownerPath)) {
+            const owners = JSON.parse(fs.readFileSync(ownerPath, 'utf-8'));
+            if (owners.length > 0) {
+                return owners[0];
+            }
+        }
+    } catch (error) {}
+    
     return '';
 }
+
+// Fonction pour sauvegarder le propriétaire dans config.json
+function saveOwnerNumber(number) {
+    try {
+        const configPath = './data/config.json';
+        let configData = {};
+        
+        if (fs.existsSync(configPath)) {
+            configData = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+        }
+        
+        configData.ownerNumber = number;
+        configData.updatedAt = new Date().toISOString();
+        
+        fs.ensureDirSync('./data');
+        fs.writeFileSync(configPath, JSON.stringify(configData, null, 2));
+        return true;
+    } catch (error) {
+        console.error('Error saving owner number:', error);
+        return false;
+    }
+}
+
+const _prefixes = process.env.PREFIXES ? process.env.PREFIXES.split(',') : ['-', '$', '#'];
 
 const config = {
     // Bot Identity
     botName: process.env.BOT_NAME || 'NOVA-MD',
     botOwner: process.env.BOT_OWNER || 'NOSTRA',
     ownerNumber: getOwnerNumber(),
-    author:'NOSTRA',
-    packname:'NOVA-MD',
+    author: 'NOSTRA',
+    packname: 'NOVA-MD',
     description: process.env.DESCRIPTION || 'High performance multi-device WhatsApp bot',
     version: '2.0.0',
     // Bot Config
@@ -45,9 +109,9 @@ const config = {
     commandMode: process.env.COMMAND_MODE || 'private',
     timeZone: process.env.TIMEZONE || 'Africa/Douala',
     // Links
-    channelLink:'https://whatsapp.com/channel/0029Vb8ZJnsAYlUHo1uA6W0y',
+    channelLink: 'https://whatsapp.com/channel/0029Vb8ZJnsAYlUHo1uA6W0y',
     updateZipUrl: process.env.UPDATE_URL || 'https://github.com/NOSTRA-DevOps/Nova-MD/archive/refs/heads/main.zip',
-    ytChannel:'https://www.youtube.com/@LaboKingFreeSurf?sub_confirmation=1',
+    ytChannel: 'https://www.youtube.com/@LaboKingFreeSurf?sub_confirmation=1',
     // Session
     sessionId: process.env.SESSION_ID || '',
     pairingNumber: process.env.PAIRING_NUMBER || '',
@@ -83,5 +147,10 @@ const config = {
         'https://api-fgmods.ddns.net': 'fg-dylux'
     }
 };
+
+// Exporter la fonction saveOwnerNumber pour usage externe
+config.saveOwnerNumber = saveOwnerNumber;
+
+console.log('🤖 Owner Number detected:', config.ownerNumber || '❌ NOT SET - Use .owner2 set');
 
 export default config;
